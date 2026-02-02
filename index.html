@@ -4494,10 +4494,21 @@ function printReceipt(saleData) {
     const receiptContainer = document.getElementById('receiptPrintContainer');
     const date = new Date(saleData.timestamp).toLocaleString();
 
-    // Build receipt as plain text using dots for separation
+    // Helper function to pad strings for alignment
+    function padRight(str, length) {
+        str = str.toString();
+        return str.length < length ? str + ' '.repeat(length - str.length) : str.substring(0, length);
+    }
+
+    function padLeft(str, length) {
+        str = str.toString();
+        return str.length < length ? ' '.repeat(length - str.length) + str : str.substring(0, length);
+    }
+
+    // Build receipt text
     let receiptText = '';
 
-    // Header - company name bigger, no duplicate
+    // Header
     const companyName = companyData.company_id || 'STREETWISE MEATS';
     receiptText += `${companyName}\n`;
     if (companyData.address) receiptText += `${companyData.address}\n`;
@@ -4516,23 +4527,31 @@ function printReceipt(saleData) {
     receiptText += `Payment: ${saleData.payment_method}\n`;
     receiptText += '................................\n';
 
-    // Items - truncated to fit 58mm (~20 chars per line)
+    // Items header
+    receiptText += padRight('Item', 20) + padLeft('Qty', 6) + padLeft('Price', 8) + padLeft('Total', 8) + '\n';
+    receiptText += '................................\n';
+
+    // Items
     saleData.items.forEach(item => {
         const unit = item.item === 'each' ? 'pcs' : 'kg';
-        const quantityDisplay = item.item === 'each' ? item.quantity : item.quantity.toFixed(3);
-        const itemName = item.name.length > 20 ? item.name.substring(0, 20) : item.name;
-        receiptText += `${itemName}\n`;
-        receiptText += `${quantityDisplay} ${unit} x $${item.price.toFixed(2)} = $${item.total.toFixed(2)}\n`;
-        if (item.tax) receiptText += `TAX: ${item.tax}%\n`;
-        receiptText += '................................\n';
+        const qty = item.item === 'each' ? item.quantity : item.quantity.toFixed(3);
+        const name = item.name.length > 20 ? item.name.substring(0, 20) : item.name;
+
+        receiptText += padRight(name, 20) +
+                       padLeft(qty + unit, 6) +
+                       padLeft('$' + item.price.toFixed(2), 8) +
+                       padLeft('$' + item.total.toFixed(2), 8) + '\n';
     });
 
+    receiptText += '................................\n';
+
     // Totals
-    receiptText += `SUB TOTAL: $${saleData.total.toFixed(2)}\n`;
+    receiptText += padRight('SUB TOTAL:', 34) + padLeft('$' + saleData.total.toFixed(2), 8) + '\n';
     if (saleData.payment_method === 'CASH') {
-        receiptText += `CASH RECEIVED: $${saleData.cash_received.toFixed(2)}\n`;
-        receiptText += `CHANGE GIVEN: $${saleData.change_given.toFixed(2)}\n`;
+        receiptText += padRight('CASH RECEIVED:', 34) + padLeft('$' + saleData.cash_received.toFixed(2), 8) + '\n';
+        receiptText += padRight('CHANGE GIVEN:', 34) + padLeft('$' + saleData.change_given.toFixed(2), 8) + '\n';
     }
+
     receiptText += '................................\n';
 
     // Footer
@@ -4552,8 +4571,13 @@ ${receiptText}
     `);
     printWindow.document.close();
 
-    setTimeout(() => printWindow.print(), 200);
+    // Print and auto-close
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    }, 300);
 }
+
 
         // Make functions global
         window.openQuantityModal = openQuantityModal;
