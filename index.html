@@ -1,1 +1,4616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spark By Enican - POS System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary: #7ed957;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --success: #4caf50;
+            --info: #2196f3;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 0.375rem;
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* Login Modal Styles */
+        .login-modal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 40px 30px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .login-logo i {
+            color: var(--secondary);
+            font-size: 3rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .login-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .login-body {
+            padding: 40px 30px 30px;
+        }
+
+        .login-input-group {
+            margin-bottom: 25px;
+        }
+
+        .login-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+        }
+
+        .login-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background-color: white;
+        }
+
+        .login-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--danger);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 115, 232, 0.3);
+        }
+
+        .login-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--secondary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 25px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* POS Container */
+        .pos-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .pos-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pos-products {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .pos-cart {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 20px;
+        }
+
+        /* Products Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .product-card.out-of-stock {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .product-card-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .product-card-details {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .product-card-price {
+            font-weight: bold;
+            color: var(--success);
+            font-size: 1.1rem;
+        }
+
+        .product-card-stock {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #e9ecef;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .product-card-stock.low {
+            background: var(--warning);
+            color: white;
+        }
+
+        .product-card-stock.critical {
+            background: var(--danger);
+            color: white;
+        }
+
+        .product-type-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--info);
+            color: white;
+            text-transform: uppercase;
+        }
+
+        /* Cart styles */
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+        }
+
+        .cart-item-quantity {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .cart-item-price {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .remove-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cart-actions .btn {
+            flex: 1;
+        }
+
+        /* Quantity Modal */
+        .quantity-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-modal.active {
+            display: flex;
+        }
+
+        .quantity-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .quantity-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .quantity-header h3 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .quantity-header .product-type {
+            color: var(--info);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .quantity-input-group {
+            margin-bottom: 20px;
+        }
+
+        .quantity-input {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+            border: 3px solid #e1e5e9;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .quantity-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: white;
+        }
+
+        /* New Calculator Style Quantity Buttons */
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .calc-btn {
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calc-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .calc-btn.zero {
+            grid-column: span 2;
+        }
+
+        .calc-btn.comma {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .calc-btn.clear {
+            background: var(--danger);
+        }
+
+        .calc-btn.clear:hover {
+            background: #d32f2f;
+        }
+
+        .calc-btn.add-to-cart {
+            background: var(--success);
+            grid-column: span 2;
+        }
+
+        .calc-btn.add-to-cart:hover {
+            background: #45a049;
+        }
+
+        .quantity-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .quantity-actions .btn {
+            flex: 1;
+        }
+
+        /* Payment Modal */
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-modal.active {
+            display: flex;
+        }
+
+        .payment-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-amounts {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .amount-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .amount-row.total {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .amount-row.change {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: var(--success);
+            margin-top: 10px;
+        }
+
+        .cash-input-group {
+            margin-bottom: 25px;
+        }
+
+        .cash-input {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+
+        .cash-input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .cash-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cash-btn {
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cash-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .cash-btn.zero {
+            grid-column: span 2;
+        }
+
+        .cash-btn.clear {
+            background: var(--danger);
+        }
+
+        .cash-btn.clear:hover {
+            background: #d32f2f;
+        }
+
+        .cash-btn.done {
+            background: var(--success);
+            grid-column: span 2;
+        }
+
+        .cash-btn.done:hover {
+            background: #45a049;
+        }
+
+        .payment-method-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .payment-method-btn {
+            padding: 12px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .payment-method-btn:hover {
+            border-color: var(--primary);
+            background: #f8f9fa;
+        }
+
+        .payment-method-btn.selected {
+            border-color: var(--primary);
+            background: rgba(26, 115, 232, 0.1);
+            color: var(--primary);
+        }
+
+        /* Alert Modal */
+        .alert-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-modal.active {
+            display: flex;
+        }
+
+        .alert-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .alert-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .alert-icon.success {
+            color: var(--success);
+        }
+
+        .alert-icon.error {
+            color: var(--danger);
+        }
+
+        .alert-icon.warning {
+            color: var(--warning);
+        }
+
+        .alert-icon.info {
+            color: var(--info);
+        }
+
+        .alert-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .alert-message {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        /* Sync Status */
+        .sync-status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid var(--info);
+        }
+
+        .sync-status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sync-status-title {
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sync-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--info);
+        }
+
+        .sync-indicator.syncing {
+            background: var(--warning);
+            animation: pulse 1.5s infinite;
+        }
+
+        .sync-indicator.success {
+            background: var(--success);
+        }
+
+        .sync-indicator.error {
+            background: var(--danger);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .pending-receipts {
+            margin-top: 10px;
+        }
+
+        .pending-receipt {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        .pending-receipt:last-child {
+            margin-bottom: 0;
+        }
+
+        .receipt-info {
+            font-size: 0.85rem;
+        }
+
+        .receipt-number {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .receipt-status {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--warning);
+            color: white;
+        }
+
+        .receipt-status.synced {
+            background: var(--success);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #fafbfc;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background-color: white;
+        }
+
+        /* Footer Navigation */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+        
+        .footer-item.active {
+            color: var(--primary);
+            transform: translateY(-3px);
+            background: rgba(26, 115, 232, 0.1);
+        }
+        
+        .footer-item:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .footer-icon {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .receipt-print, .receipt-print * {
+                visibility: visible;
+            }
+            .receipt-print {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                color: black;
+                font-weight: bold;
+            }
+        }
+
+        /* Online Indicator */
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .online-indicator.online {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .online-indicator.offline {
+            background: var(--gray);
+        }
+
+        /* Error Messages */
+        .error-message {
+            background: var(--danger);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+            display: none;
+        }
+
+        /* Price Tag Generator Styles */
+        #price-tag-container {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .products-grid-small {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 1200px) {
+            .products-grid-small {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .products-grid-small {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid-small {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .product-card-small {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100px;
+        }
+
+        .product-card-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+        }
+
+        .product-card-small:active {
+            transform: translateY(0);
+        }
+
+        .product-name-small {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-price-small {
+            font-weight: bold;
+            color: var(--success);
+            font-size: 0.9rem;
+        }
+
+        .product-code-small {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            border: 2px solid var(--primary);
+        }
+
+        .search-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestion-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .suggestion-price {
+            font-weight: bold;
+            color: var(--success);
+        }
+
+        /* Price Tag Modal Specific Styles */
+        .price-tag-preview-container {
+            background: white;
+            border: 2px solid #000;
+            width: 320px;
+            min-height: 450px;
+            margin: 0 auto;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .price-tag-header {
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 3px double #000;
+            margin-bottom: 15px;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 0 0 5px 0;
+            line-height: 1;
+        }
+
+        .company-details {
+            font-size: 10px;
+            font-weight: 600;
+            margin: 3px 0;
+        }
+
+        .product-section {
+            text-align: center;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+
+        .product-name-large {
+            font-size: 28px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0 0 10px 0;
+            line-height: 1.1;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-code-box {
+            font-size: 16px;
+            font-weight: 700;
+            background: #f0f0f0;
+            padding: 6px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 1px solid #000;
+        }
+
+        .price-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+
+        .price-label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .price-amount {
+            font-size: 44px;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+
+        .unit-type {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .barcode-area {
+            margin: 15px auto;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            background: white;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .footer-section {
+            text-align: center;
+            padding: 15px 10px;
+            margin-top: 20px;
+            border-top: 1px dashed #000;
+        }
+
+        .quality-seal {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .spark-logo {
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            @page {
+                margin: 0;
+                padding: 0;
+                size: 80mm auto;
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                width: 80mm;
+            }
+            /* Price Tag Modal Scrollable */
+           .price-tag-modal-content {
+              max-height: 85vh;
+              overflow-y: auto;
+            }
+            .price-tag-print {
+                width: 80mm !important;
+                min-height: 100mm !important;
+                border: 2px solid black !important;
+                page-break-inside: avoid;
+                page-break-after: always;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Fade In Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                padding-bottom: 90px;
+            }
+
+            .login-container {
+                margin: 10px;
+            }
+
+            .login-header {
+                padding: 30px 20px 20px;
+            }
+
+            .login-body {
+                padding: 30px 20px 20px;
+            }
+
+            .pos-container {
+                grid-template-columns: 1fr;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            footer {
+                padding: 0.9rem 0;
+            }
+
+            .footer-item {
+                padding: 6px 10px;
+                min-width: 55px;
+            }
+
+            .footer-icon {
+                font-size: 1.2rem;
+            }
+
+            .price-tag-preview-container {
+                width: 280px;
+                transform: scale(0.9);
+            }
+
+            /* Add to your existing CSS */
+            #priceTagModal .quantity-content {
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            #priceTagPreviewContent {
+                transform: scale(0.85);
+                transform-origin: top center;
+            }
+        }
+
+        /* Payment Modal Styles */
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payment-option {
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+            background: #f8f9fa;
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        .payment-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .currency-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .currency-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .currency-option:hover {
+            border-color: var(--primary);
+            background: #f8f9fa;
+        }
+
+        .currency-option.selected {
+            border-color: var(--primary);
+            background: rgba(26, 115, 232, 0.1);
+        }
+
+        /* ZIMRA Status */
+        .zimra-status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid var(--success);
+        }
+
+        .zimra-status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .zimra-status-title {
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zimra-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .zimra-indicator.pending {
+            background: var(--warning);
+            animation: pulse 1.5s infinite;
+        }
+
+        .zimra-indicator.error {
+            background: var(--danger);
+        }
+
+        .pending-fiscalization {
+            margin-top: 10px;
+        }
+
+        .pending-fiscal {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        .pending-fiscal:last-child {
+            margin-bottom: 0;
+        }
+
+        .fiscal-info {
+            font-size: 0.85rem;
+        }
+
+        .fiscal-number {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .fiscal-status {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background: var(--warning);
+            color: white;
+        }
+
+        .fiscal-status.fiscalized {
+            background: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-bolt"></i>
+                    Spark By Enican
+                </div>
+                <div class="login-subtitle">Point of Sale System</div>
+            </div>
+            
+            <div class="login-body">
+                <div class="login-input-group">
+                    <label class="login-label">Username</label>
+                    <input type="text" id="username" class="login-input" placeholder="Enter your username" autocomplete="username">
+                </div>
+                
+                <div class="login-input-group">
+                    <label class="login-label">Password</label>
+                    <input type="password" id="password" class="login-input" placeholder="Enter your password" autocomplete="current-password">
+                </div>
+                
+                <div class="login-error" id="loginError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="loginErrorText">Network error. Please try again.</span>
+                </div>
+                
+                <button class="login-button" onclick="login()" id="loginBtn">
+                    <span id="loginBtnText">Login</span>
+                    <div class="loading-spinner" id="loginLoading" style="display: none;"></div>
+                </button>
+            </div>
+            
+            <div class="login-footer">
+                <p>© 2025 Spark By Enican-Eng.Mujakata</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer" style="display: none;">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-bolt"></i>
+                    Spark By Enican
+                </div>
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">U</div>
+                    <div>
+                        <div id="welcomeMessage">Welcome, User</div>
+                        <div id="userRole" style="font-size: 0.85rem;">Role: Loading...</div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- POS System -->
+            <div id="pos-system">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: var(--primary); margin: 0;"><i class="fas fa-cash-register"></i> Point of Sale</h2>
+                    <div>
+                        <button class="btn" onclick="refreshProducts()" style="margin-right: 10px;">
+                            <i class="fas fa-sync-alt"></i> Refresh Products
+                        </button>
+                        <button class="btn btn-primary" onclick="togglePriceTagSection()">
+                            <i class="fas fa-tag"></i> Price Tag
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pos-container">
+                    <!-- Products Grid -->
+                    <div class="pos-products">
+                        <div style="margin-bottom: 20px;">
+                            <input type="text" id="productSearch" class="form-input" placeholder="Search products by name or code...">
+                        </div>
+                        
+                        <div id="product-list" class="product-grid">
+                            <div style="text-align: center; padding: 40px; color: var(--gray); grid-column: 1 / -1;">
+                                <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                                <p>Loading products...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart -->
+                    <div class="pos-cart">
+                        <div class="cart-header">
+                            <h3 style="margin: 0;"><i class="fas fa-shopping-cart"></i> Cart</h3>
+                            <button class="btn btn-danger" onclick="clearCart()" style="padding: 8px 12px; font-size: 0.9rem;">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </div>
+                        
+                        <div id="cart-items" class="cart-items">
+                            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                <p>Cart is empty</p>
+                            </div>
+                        </div>
+                        
+                        <div class="cart-total" id="cart-total">
+                            Total: $0.00
+                        </div>
+                        
+                        <div class="cart-actions">
+                            <button class="btn btn-success" onclick="openPaymentModal()" style="flex: 1;">
+                                <i class="fas fa-check"></i> Complete Sale
+                            </button>
+                        </div>
+
+                        <!-- Sync Status -->
+                        <div class="sync-status" id="syncStatus" style="display: none;">
+                            <div class="sync-status-header">
+                                <div class="sync-status-title">
+                                    <div class="sync-indicator" id="syncIndicator"></div>
+                                    <span id="syncStatusText">Syncing...</span>
+                                </div>
+                                <span id="pendingCount">0 pending</span>
+                            </div>
+                            <div class="pending-receipts" id="pendingReceipts">
+                            </div>
+                        </div>
+
+                        <!-- ZIMRA Status -->
+                        <div class="zimra-status" id="zimraStatus" style="display: none;">
+                            <div class="zimra-status-header">
+                                <div class="zimra-status-title">
+                                    <div class="zimra-indicator" id="zimraIndicator"></div>
+                                    <span id="zimraStatusText">ZIMRA Fiscalization</span>
+                                </div>
+                                <span id="zimraPendingCount">0 pending</span>
+                            </div>
+                            <div class="pending-fiscalization" id="pendingFiscalization">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Tag Generator Section -->
+            <div id="price-tag-container" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: var(--primary); margin: 0;"><i class="fas fa-tag"></i> Price Tag Generator</h2>
+                    <button class="btn btn-primary" onclick="togglePriceTagSection()">
+                        <i class="fas fa-arrow-left"></i> Back to POS
+                    </button>
+                </div>
+
+                <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <div style="margin-bottom: 20px;">
+                        <div class="search-container" style="position: relative;">
+                            <input type="text" id="priceTagSearch" class="form-input" placeholder="Search products by name or code..." autocomplete="off">
+                            <div id="searchSuggestions" class="search-suggestions"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="products-grid-small" class="products-grid-small">
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-box-open" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>Loading products...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; color: var(--gray); padding: 40px; background: white; border-radius: 10px; box-shadow: var(--box-shadow);">
+                    <i class="fas fa-tag" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>Select a product to generate a price tag</p>
+                    <p style="font-size: 0.9rem;">Click on any product above to preview and print a price tag</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quantity Modal -->
+    <div class="quantity-modal" id="quantityModal">
+        <div class="quantity-content">
+            <div class="quantity-header">
+                <h3 id="productNameDisplay">Product Name</h3>
+                <p id="productTypeDisplay" class="product-type"></p>
+                <p id="quantityInstruction" style="color: var(--gray);">Enter quantity</p>
+            </div>
+            
+            <div class="quantity-input-group">
+                <input type="text" id="productQuantity" class="quantity-input" value="0" readonly>
+            </div>
+            
+            <!-- New Calculator Style Buttons -->
+            <div class="calculator-buttons" id="calculatorButtons">
+                <button class="calc-btn" onclick="appendToQuantity('7')">7</button>
+                <button class="calc-btn" onclick="appendToQuantity('8')">8</button>
+                <button class="calc-btn" onclick="appendToQuantity('9')">9</button>
+                <button class="calc-btn clear" onclick="clearQuantity()">C</button>
+                <button class="calc-btn" onclick="appendToQuantity('4')">4</button>
+                <button class="calc-btn" onclick="appendToQuantity('5')">5</button>
+                <button class="calc-btn" onclick="appendToQuantity('6')">6</button>
+                <button class="calc-btn" onclick="backspaceQuantity()">⌫</button>
+                <button class="calc-btn" onclick="appendToQuantity('1')">1</button>
+                <button class="calc-btn" onclick="appendToQuantity('2')">2</button>
+                <button class="calc-btn" onclick="appendToQuantity('3')">3</button>
+                <button class="calc-btn comma" onclick="appendToQuantity('.')">.</button>
+                <button class="calc-btn zero" onclick="appendToQuantity('0')">0</button>
+                <button class="calc-btn add-to-cart" onclick="confirmQuantity()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cash Payment Modal -->
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-content">
+            <div class="payment-header">
+                <h3 style="color: var(--primary);"><i class="fas fa-money-check-alt"></i> Cash Payment</h3>
+                <div class="payment-amounts">
+                    <div class="amount-row">
+                        <span>Total Amount:</span>
+                        <span id="paymentTotalAmount">$0.00</span>
+                    </div>
+                    <div class="amount-row">
+                        <span>Cash Received:</span>
+                        <span id="cashReceivedAmount">$0.00</span>
+                    </div>
+                    <div class="amount-row change">
+                        <span>Change:</span>
+                        <span id="changeAmount">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cash-input-group">
+                <input type="text" id="cashInput" class="cash-input" value="0" readonly>
+            </div>
+            
+            <div class="cash-buttons">
+                <button class="cash-btn" onclick="appendToCash('7')">7</button>
+                <button class="cash-btn" onclick="appendToCash('8')">8</button>
+                <button class="cash-btn" onclick="appendToCash('9')">9</button>
+                <button class="cash-btn clear" onclick="clearCash()">C</button>
+                <button class="cash-btn" onclick="appendToCash('4')">4</button>
+                <button class="cash-btn" onclick="appendToCash('5')">5</button>
+                <button class="cash-btn" onclick="appendToCash('6')">6</button>
+                <button class="cash-btn" onclick="backspaceCash()">⌫</button>
+                <button class="cash-btn" onclick="appendToCash('1')">1</button>
+                <button class="cash-btn" onclick="appendToCash('2')">2</button>
+                <button class="cash-btn" onclick="appendToCash('3')">3</button>
+                <button class="cash-btn" onclick="appendToCash('.')">.</button>
+                <button class="cash-btn zero" onclick="appendToCash('0')">0</button>
+                <button class="cash-btn done" onclick="processCashPayment()">Done</button>
+            </div>
+            
+            <div class="payment-method-options">
+                <button class="payment-method-btn" onclick="selectPaymentMethod('CASH')">CASH</button>
+                <button class="payment-method-btn" onclick="selectPaymentMethod('CARD')">CARD</button>
+                <button class="payment-method-btn" onclick="selectPaymentMethod('OTHER')">OTHER</button>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn" onclick="closePaymentModal()" style="flex: 1;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-success" onclick="completeSale()" style="flex: 1;" id="completeSaleBtn">
+                    <i class="fas fa-check"></i> Complete & Fiscalize
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div class="alert-modal" id="alertModal">
+        <div class="alert-content">
+            <div class="alert-icon success" id="alertIcon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="alert-title" id="alertTitle">Success</h3>
+            <p class="alert-message" id="alertMessage">Operation completed successfully.</p>
+            <button class="btn btn-primary" onclick="closeAlertModal()" style="width: 100%;">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- Price Tag Modal -->
+    <div class="quantity-modal" id="priceTagModal">
+        <div class="quantity-content" style="max-width: 400px; max-height: 90vh; overflow: hidden;">
+            <div class="price-tag-modal-content" style="max-height: 80vh; overflow-y: auto; padding-right: 10px;">
+                <div class="quantity-header">
+                    <h3 style="color: var(--primary);"><i class="fas fa-tag"></i> Price Tag Generator</h3>
+                    <p style="color: var(--gray);">80mm Portrait - Black & White</p>
+                </div>
+                
+                <div class="quantity-input-group" style="text-align: center;">
+                    <div id="priceTagPreviewContent" style="display: inline-block; margin: 15px 0;">
+                        <!-- Preview will be inserted here -->
+                    </div>
+                    
+                    <div style="margin-top: 10px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                        <h4 style="color: var(--primary); margin-bottom: 10px; font-size: 14px;">Product Details</h4>
+                        <div style="font-size: 12px;">
+                            <div style="margin-bottom: 5px;"><strong>Product:</strong> <span id="priceTagProductName">-</span></div>
+                            <div style="margin-bottom: 5px;"><strong>Code:</strong> <span id="priceTagProductCode">-</span></div>
+                            <div style="margin-bottom: 5px;"><strong>Price:</strong> <span id="priceTagProductPrice" style="color: var(--success); font-weight: bold;">$0.00</span></div>
+                            <div><strong>Type:</strong> <span id="priceTagProductType">-</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quantity-actions">
+                    <button class="btn" onclick="closePriceTagModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button class="btn btn-success" onclick="printPriceTag()">
+                        <i class="fas fa-print"></i> Print Price Tag
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden receipt for printing -->
+    <div id="receiptPrintContainer" style="display: none;"></div>
+
+    <!-- Hidden price tag for printing -->
+    <div id="priceTagPrintContainer" style="display: none;"></div>
+
+    <!-- Footer Navigation -->
+    <footer>
+        <a href="index.html" class="footer-item active">
+            <i class="fas fa-home footer-icon"></i>
+            <span>Home</span>
+        </a>
+        <a href="products.html" class="footer-item">
+            <i class="fas fa-box-open footer-icon"></i>
+            <span>Products</span>
+        </a>
+        <a href="customers.html" class="footer-item">
+            <i class="fas fa-users footer-icon"></i>
+            <span>Customers</span>
+        </a>
+        <a href="reports.html" class="footer-item">
+            <i class="fas fa-chart-line footer-icon"></i>
+            <span>Reports</span>
+        </a>
+        <a href="settings.html" class="footer-item">
+            <i class="fas fa-cog footer-icon"></i>
+            <span>Settings</span>
+        </a>
+    </footer>
+<script>
+        // API URLs
+        const PRODUCTS_API_URL = 'https://script.google.com/macros/s/AKfycbwkOVLOjHJpJH5B0XVetwKu6FrML5VFbT7madi5JVK5NPKz4wh6iVjMaNn_Z4uMJqbD/exec';
+        const COMPANY_API_URL = 'https://script.google.com/macros/s/AKfycbxWiSbb-d7WkWPuhunJ31FRNernbRq68n9KsJ-iQmOOhwzjJszPtwaEDFpvtqOiuc1m/exec';
+        const ZIMRA_API_URL = 'https://script.google.com/macros/s/AKfycbxSdgbTjE1RABCEOOjZSq3GK2r7vPKD4FmJEpZO9FwY-k1G4ehbtNxk3Lew0oQMNgls/exec';
+
+        // Current data
+        let currentUser = null;
+        let companyData = null;
+        let products = [];
+        let aggregatedProducts = [];
+        let cart = [];
+        let pendingSales = [];
+        let pendingFiscalization = [];
+        let selectedProduct = null;
+        let syncInterval = null;
+        let zimraInterval = null;
+        let isSyncing = false;
+        let isFiscalizing = false;
+        let onlineStatus = navigator.onLine;
+        let lastApiSuccessTime = null;
+        let selectedPaymentMethod = 'CASH';
+        let selectedCurrency = 'USD';
+        const USD_TO_ZIG_RATE = 45;
+
+        // Payment variables
+        let cashReceived = 0;
+        let changeAmount = 0;
+
+        // Price Tag Generator Data
+        let selectedProductForTag = null;
+        let priceTagSearchSuggestions = [];
+
+        // Database
+        const DB_NAME = 'SparkPOS';
+        const DB_VERSION = 9;
+        let db = null;
+
+        // Initialize database
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // Create object stores
+                    if (!db.objectStoreNames.contains('cart')) {
+                        db.createObjectStore('cart', { keyPath: 'id' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('pendingSales')) {
+                        const pendingStore = db.createObjectStore('pendingSales', { keyPath: 'receipt_no' });
+                        pendingStore.createIndex('by_status', 'status');
+                        pendingStore.createIndex('by_synced', 'synced');
+                        pendingStore.createIndex('by_company', 'company_id');
+                        pendingStore.createIndex('by_timestamp', 'timestamp');
+                    }
+                    
+                    if (!db.objectStoreNames.contains('syncedReceipts')) {
+                        const syncedStore = db.createObjectStore('syncedReceipts', { keyPath: 'receipt_no' });
+                        syncedStore.createIndex('by_date', 'timestamp');
+                        syncedStore.createIndex('by_company', 'company_id');
+                    }
+                    
+                    if (!db.objectStoreNames.contains('products')) {
+                        const productsStore = db.createObjectStore('products', { keyPath: 'code' });
+                        productsStore.createIndex('by_company', 'company_id');
+                        productsStore.createIndex('by_stock', 'totalStock');
+                        productsStore.createIndex('by_name', 'name');
+                        productsStore.createIndex('by_timestamp', 'timestamp');
+                    }
+                    
+                    if (!db.objectStoreNames.contains('companyData')) {
+                        db.createObjectStore('companyData', { keyPath: 'company_id' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('users')) {
+                        const usersStore = db.createObjectStore('users', { keyPath: 'username' });
+                        usersStore.createIndex('by_company', 'company_id');
+                        usersStore.createIndex('by_timestamp', 'last_login');
+                    }
+                    
+                    if (!db.objectStoreNames.contains('appState')) {
+                        db.createObjectStore('appState', { keyPath: 'key' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('syncQueue')) {
+                        const queueStore = db.createObjectStore('syncQueue', { keyPath: 'id', autoIncrement: true });
+                        queueStore.createIndex('by_status', 'status');
+                        queueStore.createIndex('by_type', 'type');
+                    }
+                    
+                    if (!db.objectStoreNames.contains('pageCache')) {
+                        db.createObjectStore('pageCache', { keyPath: 'url' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('priceTagSettings')) {
+                        db.createObjectStore('priceTagSettings', { keyPath: 'company_id' });
+                    }
+                    
+                    // Add ZIMRA fiscalization store
+                    if (!db.objectStoreNames.contains('zimraQueue')) {
+                        const zimraStore = db.createObjectStore('zimraQueue', { keyPath: 'receipt_no' });
+                        zimraStore.createIndex('by_status', 'fiscalized');
+                        zimraStore.createIndex('by_company', 'company_id');
+                        zimraStore.createIndex('by_timestamp', 'timestamp');
+                        zimraStore.createIndex('by_attempts', 'fiscal_attempts');
+                    }
+                };
+            });
+        }
+
+        // Store data in IndexedDB
+        async function storeData(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.put(data);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        // Get data from IndexedDB
+        async function getData(storeName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.get(key);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        // Get all data from IndexedDB
+        async function getAllData(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        // Get data by index
+        async function getDataByIndex(storeName, indexName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const index = store.index(indexName);
+                const request = index.getAll(key);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        // Delete data from IndexedDB
+        async function deleteData(storeName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(key);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        // Clear store in IndexedDB
+        async function clearStore(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => resolve(request.result);
+            });
+        }
+
+        // Cache user credentials for offline login
+        async function cacheUserCredentials(userData) {
+            try {
+                await storeData('users', {
+                    username: userData.username,
+                    password: userData.password,
+                    role: userData.role,
+                    company_id: userData.company_id,
+                    plan: userData.plan || 'basic',
+                    logo: userData.logo || '',
+                    vat: userData.vat || '',
+                    tin: userData.tin || '',
+                    address: userData.address || '',
+                    phone: userData.phone || '',
+                    email: userData.email || '',
+                    last_login: new Date().toISOString()
+                });
+                
+                // Store as last active user
+                await storeData('appState', {
+                    key: 'last_active_user',
+                    username: userData.username,
+                    company_id: userData.company_id,
+                    timestamp: new Date().toISOString()
+                });
+                
+                console.log('User credentials cached for offline login');
+            } catch (error) {
+                console.error('Error caching user credentials:', error);
+            }
+        }
+
+        // Get cached user by username
+        async function getCachedUser(username) {
+            try {
+                return await getData('users', username);
+            } catch (error) {
+                console.error('Error getting cached user:', error);
+                return null;
+            }
+        }
+
+        // Get last active user from cache
+        async function getLastActiveUser() {
+            try {
+                return await getData('appState', 'last_active_user');
+            } catch (error) {
+                console.error('Error getting last active user:', error);
+                return null;
+            }
+        }
+
+        // Check if online
+        function checkOnlineStatus() {
+            onlineStatus = navigator.onLine;
+            return onlineStatus;
+        }
+
+        // Logout function - Fixed to always work
+        async function logout() {
+            // Ask for confirmation
+            if (!confirm('Are you sure you want to logout?')) {
+                return;
+            }
+            
+            try {
+                // Save current cart before logout
+                await saveCart();
+                
+                // Clear current user data
+                currentUser = null;
+                localStorage.removeItem('spark_pos_user');
+                
+                // Stop sync intervals
+                if (syncInterval) {
+                    clearInterval(syncInterval);
+                    syncInterval = null;
+                }
+                
+                if (zimraInterval) {
+                    clearInterval(zimraInterval);
+                    zimraInterval = null;
+                }
+                
+                // Reset application state
+                products = [];
+                aggregatedProducts = [];
+                cart = [];
+                pendingSales = [];
+                pendingFiscalization = [];
+                selectedProduct = null;
+                selectedProductForTag = null;
+                
+                // Hide main container, show login modal
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('loginModal').style.display = 'flex';
+                
+                // Clear login form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('loginError').style.display = 'none';
+                
+                console.log('User logged out successfully');
+                
+            } catch (error) {
+                console.error('Error during logout:', error);
+                // Force logout anyway
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        }
+
+        // Enhanced login function
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const loginLoading = document.getElementById('loginLoading');
+            const loginError = document.getElementById('loginError');
+            const loginErrorText = document.getElementById('loginErrorText');
+            
+            if (!username || !password) {
+                loginErrorText.textContent = 'Please enter both username and password';
+                loginError.style.display = 'flex';
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            loginBtnText.style.display = 'none';
+            loginLoading.style.display = 'inline-block';
+            loginError.style.display = 'none';
+            
+            try {
+                // Always try cached credentials first for faster login
+                const cachedUser = await getCachedUser(username);
+                
+                if (cachedUser && cachedUser.password === password) {
+                    // Login with cached credentials
+                    handleSuccessfulLogin(cachedUser, true);
+                    return;
+                }
+                
+                // If not cached or password doesn't match, try online login
+                if (!navigator.onLine) {
+                    throw new Error('No internet connection and no cached credentials found.');
+                }
+                
+                // Online login with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                try {
+                    const sheetID = "1WvZt3zyYVkTmWsXjoJL6Fy_I33l2tFBMYEUzxFDQRd0";
+                    const sheetName = "accounts";
+                    const apiURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&tq&sheet=${sheetName}`;
+
+                    const response = await fetch(apiURL, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    let text = await response.text();
+                    
+                    // Parse the Google Sheets JSON response
+                    const jsonStart = text.indexOf('{');
+                    const jsonEnd = text.lastIndexOf('}') + 1;
+                    const jsonText = text.substring(jsonStart, jsonEnd);
+                    
+                    if (!jsonText) {
+                        throw new Error('Invalid response from server');
+                    }
+                    
+                    let json;
+                    try {
+                        json = JSON.parse(jsonText);
+                    } catch (parseError) {
+                        console.error('JSON parse error:', parseError);
+                        throw new Error('Invalid data format from server');
+                    }
+
+                    // Extract rows from the Google Sheets format
+                    let rows = [];
+                    if (json.table && json.table.rows) {
+                        rows = json.table.rows.map(row => {
+                            const cells = row.c || [];
+                            return {
+                                username: cells[0]?.v?.toString() || "",
+                                password: cells[1]?.v?.toString() || "",
+                                role: cells[2]?.v?.toString() || "",
+                                company_id: cells[3]?.v?.toString() || "",
+                                plan: cells[4]?.v?.toString() || "basic",
+                                logo: cells[5]?.v?.toString() || "",
+                                vat: cells[6]?.v?.toString() || "",
+                                tin: cells[7]?.v?.toString() || "",
+                                address: cells[8]?.v?.toString() || "",
+                                phone: cells[9]?.v?.toString() || "",
+                                email: cells[10]?.v?.toString() || ""
+                            };
+                        });
+                    }
+
+                    let user = rows.find(user => user.username === username);
+
+                    if (user) {
+                        if (user.password === password) {
+                            // Login successful
+                            await handleSuccessfulLogin(user, false);
+                        } else {
+                            loginErrorText.textContent = 'Invalid username or password';
+                            loginError.style.display = 'flex';
+                        }
+                    } else {
+                        loginErrorText.textContent = 'Invalid username or password';
+                        loginError.style.display = 'flex';
+                    }
+                } catch (fetchError) {
+                    if (fetchError.name === 'AbortError') {
+                        throw new Error('Login timeout. Please check your internet connection.');
+                    } else {
+                        throw fetchError;
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                let errorMessage = 'Network error. Please try again.';
+                if (error.message.includes('internet') || error.message.includes('connection') || error.message.includes('timeout')) {
+                    errorMessage = error.message;
+                } else if (error.message.includes('Invalid data') || error.message.includes('JSON')) {
+                    errorMessage = 'Server error. Please try again later.';
+                } else if (error.message.includes('cached')) {
+                    errorMessage = 'No internet connection and no valid cached credentials found.';
+                }
+                
+                loginErrorText.textContent = errorMessage;
+                loginError.style.display = 'flex';
+            } finally {
+                // Reset button state
+                loginBtn.disabled = false;
+                loginBtnText.style.display = 'inline';
+                loginLoading.style.display = 'none';
+            }
+        }
+
+        // Handle successful login
+        async function handleSuccessfulLogin(userData, isCachedLogin) {
+            currentUser = {
+                user: userData.username,
+                role: userData.role,
+                company_id: userData.company_id
+            };
+            
+            localStorage.setItem('spark_pos_user', JSON.stringify(currentUser));
+            
+            // Cache user credentials if not already cached
+            if (!isCachedLogin) {
+                await cacheUserCredentials(userData);
+            }
+            
+            // Hide login modal and initialize app
+            document.getElementById('loginModal').style.display = 'none';
+            await initApp();
+            
+            // Only show alert for cached login (offline mode)
+            if (isCachedLogin) {
+                showAlert('Info', 'Logged in with cached credentials (offline mode)', 'info');
+            }
+        }
+
+        // Check authentication with offline support
+        async function checkAuth() {
+            try {
+                // Try to get from localStorage first
+                const userData = localStorage.getItem('spark_pos_user');
+                
+                if (userData) {
+                    currentUser = JSON.parse(userData);
+                    
+                    // Verify user still exists in cache
+                    const cachedUser = await getCachedUser(currentUser.user);
+                    if (cachedUser) {
+                        document.getElementById('loginModal').style.display = 'none';
+                        await initApp();
+                        return;
+                    }
+                }
+                
+                // Try to get last active user from cache
+                const lastUser = await getLastActiveUser();
+                if (lastUser && navigator.onLine === false) {
+                    // Auto-login with last user when offline (like YouTube)
+                    currentUser = {
+                        user: lastUser.username,
+                        role: 'cached',
+                        company_id: lastUser.company_id
+                    };
+                    
+                    localStorage.setItem('spark_pos_user', JSON.stringify(currentUser));
+                    document.getElementById('loginModal').style.display = 'none';
+                    await initApp();
+                    return;
+                }
+                
+                // Show login modal
+                document.getElementById('loginModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Auth check error:', error);
+                document.getElementById('loginModal').style.display = 'flex';
+            }
+        }
+
+        // Display user information
+        function displayUserInfo() {
+            if (currentUser) {
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${currentUser.user}`;
+                document.getElementById('userRole').textContent = `Role: ${currentUser.role}`;
+                document.getElementById('userAvatar').textContent = currentUser.user.charAt(0).toUpperCase();
+            }
+        }
+
+        // Initialize application with better error handling
+        async function initApp() {
+            try {
+                console.log('Initializing application...');
+                
+                // First initialize the database
+                try {
+                    await initDB();
+                    console.log('Database initialized successfully');
+                } catch (dbError) {
+                    console.error('Database initialization error:', dbError);
+                    throw new Error('Failed to initialize database. Please refresh the page.');
+                }
+                
+                // Display user info
+                displayUserInfo();
+                checkOnlineStatus();
+                
+                // Setup online/offline listeners
+                window.addEventListener('online', handleOnline);
+                window.addEventListener('offline', handleOffline);
+                
+                // Load data with smart caching strategy - handle errors gracefully
+                try {
+                    await loadCompanyData();
+                } catch (error) {
+                    console.warn('Error loading company data, continuing with default:', error);
+                    companyData = {
+                        user: currentUser.user,
+                        role: currentUser.role,
+                        company_id: currentUser.company_id,
+                        plan: 'basic',
+                        logo: '',
+                        vat: '',
+                        tin: '',
+                        address: '',
+                        phone: '',
+                        email: ''
+                    };
+                }
+                
+                try {
+                    await loadProducts();
+                } catch (error) {
+                    console.warn('Error loading products, continuing with empty list:', error);
+                    showError('product-list', 'Error loading products. Using cached data if available.');
+                }
+                
+                try {
+                    await loadCart();
+                } catch (error) {
+                    console.warn('Error loading cart, starting with empty cart:', error);
+                    cart = [];
+                    renderCart();
+                }
+                
+                try {
+                    await loadPendingSales();
+                } catch (error) {
+                    console.warn('Error loading pending sales:', error);
+                    pendingSales = [];
+                }
+                
+                try {
+                    await loadPendingFiscalization();
+                } catch (error) {
+                    console.warn('Error loading pending fiscalization:', error);
+                    pendingFiscalization = [];
+                }
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                // Start sync intervals
+                startSyncInterval();
+                startZimraInterval();
+                
+                // Show main container
+                document.getElementById('mainContainer').style.display = 'block';
+                
+                console.log('Application initialized successfully');
+                
+            } catch (error) {
+                console.error('Critical error initializing app:', error);
+                
+                // Show a more specific error message
+                let errorMessage = 'Error initializing application. Please refresh the page.';
+                
+                if (error.message.includes('database') || error.message.includes('IndexedDB')) {
+                    errorMessage = 'Database error. Please check if your browser supports IndexedDB or try clearing browser data.';
+                } else if (error.message.includes('network') || error.message.includes('internet')) {
+                    errorMessage = 'Network error. Please check your internet connection and try again.';
+                }
+                
+                // Show the error in the interface
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                document.getElementById('pos-system').innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: var(--danger);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                        <h2>Initialization Error</h2>
+                        <p>${errorMessage}</p>
+                        <p style="font-size: 0.9rem; color: var(--gray); margin-top: 10px;">Error details: ${error.message}</p>
+                        <button class="btn btn-primary" onclick="window.location.reload()" style="margin-top: 20px;">
+                            <i class="fas fa-redo"></i> Refresh Page
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle online event
+        async function handleOnline() {
+            onlineStatus = true;
+            // Silently sync data without showing alert
+            // Clear old cache if online
+            if (lastApiSuccessTime) {
+                const now = new Date();
+                const hoursSinceLastSuccess = (now - new Date(lastApiSuccessTime)) / (1000 * 60 * 60);
+                
+                if (hoursSinceLastSuccess > 1) { // Clear cache if > 1 hour old
+                    await clearOldCache();
+                }
+            }
+            
+            // Try to sync pending sales
+            syncPendingSales();
+            
+            // Try to fiscalize pending receipts
+            fiscalizePendingReceipts();
+            
+            // Refresh products
+            loadProducts();
+        }
+
+        // Handle offline event
+        function handleOffline() {
+            onlineStatus = false;
+            // Silently handle offline mode
+        }
+
+        // Clear old cache when online
+        async function clearOldCache() {
+            try {
+                if (!onlineStatus) return;
+                
+                // Clear old product cache for this company
+                const cachedProducts = await getDataByIndex('products', 'by_company', currentUser.company_id);
+                for (const product of cachedProducts) {
+                    const productAge = new Date() - new Date(product.timestamp);
+                    const maxAge = 2 * 60 * 60 * 1000; // 2 hours
+                    
+                    if (productAge > maxAge) {
+                        await deleteData('products', product.code);
+                    }
+                }
+                
+                console.log('Old cache cleared');
+            } catch (error) {
+                console.error('Error clearing old cache:', error);
+            }
+        }
+
+        // Load company data with smart caching
+        async function loadCompanyData() {
+            try {
+                // Try cache first
+                const cachedData = await getData('companyData', currentUser.company_id);
+                if (cachedData) {
+                    companyData = cachedData;
+                    console.log('Loaded company data from cache');
+                }
+                
+                // Try to refresh from API if online
+                if (onlineStatus) {
+                    try {
+                        const response = await fetch(`${COMPANY_API_URL}?action=get_company_data&company_id=${currentUser.company_id}`);
+                        if (response.ok) {
+                            const result = await response.json();
+                            if (result.status === 'success') {
+                                companyData = result.data;
+                                await storeData('companyData', {
+                                    ...companyData,
+                                    company_id: currentUser.company_id,
+                                    timestamp: new Date().toISOString()
+                                });
+                                lastApiSuccessTime = new Date().toISOString();
+                            }
+                        }
+                    } catch (apiError) {
+                        console.warn('Failed to refresh company data from API:', apiError.message);
+                    }
+                }
+                
+                // If still no company data, try to get from cached user
+                if (!companyData) {
+                    const cachedUser = await getCachedUser(currentUser.user);
+                    if (cachedUser) {
+                        companyData = {
+                            user: cachedUser.username,
+                            role: cachedUser.role,
+                            company_id: cachedUser.company_id,
+                            plan: cachedUser.plan,
+                            logo: cachedUser.logo,
+                            vat: cachedUser.vat,
+                            tin: cachedUser.tin,
+                            address: cachedUser.address,
+                            phone: cachedUser.phone,
+                            email: cachedUser.email
+                        };
+                    }
+                }
+            } catch (error) {
+                console.warn('Error loading company data:', error.message);
+                companyData = {
+                    user: currentUser.user,
+                    role: currentUser.role,
+                    company_id: currentUser.company_id,
+                    plan: 'basic',
+                    logo: '',
+                    vat: '',
+                    tin: '',
+                    address: '',
+                    phone: '',
+                    email: ''
+                };
+            }
+        }
+
+        // Load products with improved caching strategy
+        async function loadProducts() {
+            try {
+                showLoading('product-list', 'Loading products...');
+                
+                // Get cached products
+                const cachedProducts = await getDataByIndex('products', 'by_company', currentUser.company_id);
+                
+                if (cachedProducts && cachedProducts.length > 0) {
+                    // Use cached products immediately
+                    products = cachedProducts;
+                    console.log('Loaded products from cache:', products.length, 'records');
+                    aggregateProducts();
+                    displayProducts();
+                    displayProductsForPriceTags();
+                }
+                
+                // Try to refresh from API if online
+                if (onlineStatus) {
+                    try {
+                        console.log('Attempting to refresh products from API...');
+                        
+                        const response = await fetch(`${PRODUCTS_API_URL}?action=json&company_id=${currentUser.company_id}`);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
+                        const result = await response.json();
+                        
+                        if (result.status === 'success') {
+                            products = result.data;
+                            console.log('Successfully refreshed products from API:', products.length, 'records');
+                            lastApiSuccessTime = new Date().toISOString();
+                            
+                            aggregateProducts();
+                            displayProducts();
+                            displayProductsForPriceTags();
+                            
+                            // Cache the new data
+                            await cacheProducts(products);
+                            
+                            // Removed the success alert that was disturbing workers
+                            // Products are now refreshed silently
+                        } else {
+                            throw new Error(result.message || 'Failed to load products from API');
+                        }
+                    } catch (apiError) {
+                        console.warn('Failed to refresh products from API:', apiError.message);
+                        
+                        // If API fails, check if we have any cached data
+                        if (cachedProducts && cachedProducts.length > 0) {
+                            // We already loaded from cache above, just continue silently
+                        } else {
+                            // No cached data available
+                            showAlert('Error', 'No product data available. Please check your connection.', 'error');
+                        }
+                    }
+                } else {
+                    // Offline mode
+                    if (cachedProducts && cachedProducts.length === 0) {
+                        showAlert('Info', 'Working offline with no cached product data.', 'info');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showError('product-list', 'Failed to load products. Please check your connection.');
+            }
+        }
+
+        // Cache products with timestamp
+        async function cacheProducts(productsData) {
+            try {
+                const timestamp = new Date().toISOString();
+                
+                for (const product of productsData) {
+                    await storeData('products', {
+                        code: product.Code || product.code || '',
+                        name: product.Product || product.product || '',
+                        cost: parseFloat(product.Cost || product.cost || 0),
+                        price: parseFloat(product.Price || product.price || 0),
+                        stock: parseFloat(product.Stock || product.stock || 0).toFixed(3), // 3 decimal places
+                        item: product.item || '',
+                        tax: product.TAX || product.tax || '',
+                        company_id: currentUser.company_id,
+                        timestamp: timestamp,
+                        source: 'api'
+                    });
+                }
+                
+                console.log('Products cached successfully');
+            } catch (error) {
+                console.error('Error caching products:', error);
+            }
+        }
+
+        // Aggregate products by code
+        function aggregateProducts() {
+            const productMap = new Map();
+            
+            products.forEach(product => {
+                const code = (product.Code || product.code || product.code || '').toString().trim();
+                const productName = (product.Product || product.product || product.name || 'Unknown Product').toString();
+                const cost = parseFloat(product.Cost || product.cost || 0);
+                const price = parseFloat(product.Price || product.price || 0);
+                const stock = parseFloat(product.Stock || product.stock || 0);
+                const item = product.item || '';
+                const tax = product.TAX || product.tax || '';
+                
+                if (!code || code === 'N/A') {
+                    return;
+                }
+                
+                if (!productMap.has(code)) {
+                    productMap.set(code, {
+                        id: code,
+                        name: productName,
+                        code: code,
+                        cost: cost,
+                        price: price,
+                        totalStock: 0,
+                        item: item,
+                        tax: tax,
+                        lastUpdated: product.timestamp || new Date().toISOString()
+                    });
+                }
+                
+                const existing = productMap.get(code);
+                existing.totalStock += stock;
+                
+                if (existing.cost === 0) {
+                    existing.cost = cost;
+                    existing.price = price;
+                }
+                
+                if (!existing.item && item) {
+                    existing.item = item;
+                }
+                
+                if (!existing.tax && tax) {
+                    existing.tax = tax;
+                }
+                
+                // Update timestamp if newer
+                if (product.timestamp && product.timestamp > existing.lastUpdated) {
+                    existing.lastUpdated = product.timestamp;
+                }
+            });
+            
+            aggregatedProducts = Array.from(productMap.values());
+            // Format stock to 3 decimal places
+            aggregatedProducts.forEach(product => {
+                product.totalStock = parseFloat(product.totalStock.toFixed(3));
+            });
+            console.log('Aggregated products:', aggregatedProducts.length, 'unique products');
+        }
+
+        // Display products in POS list
+        function displayProducts() {
+            const list = document.getElementById('product-list');
+            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+            
+            let filteredProducts = aggregatedProducts;
+            if (searchTerm) {
+                filteredProducts = aggregatedProducts.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm) || 
+                    product.code.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filteredProducts.length === 0) {
+                list.innerHTML = `
+                    <div class="no-products" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>${searchTerm ? `No products found matching "${searchTerm}"` : 'No products available.'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = filteredProducts.map(product => {
+                const stockClass = product.totalStock <= 0 ? 'out-of-stock' : '';
+                const stockStatus = product.totalStock <= 0 ? 'Out of Stock' : 
+                                   product.totalStock <= 3 ? 'Low' : 
+                                   product.totalStock <= 10 ? 'Medium' : 'Good';
+                const stockColor = product.totalStock <= 0 ? 'critical' : 
+                                 product.totalStock <= 3 ? 'critical' : 
+                                 product.totalStock <= 10 ? 'low' : '';
+                const itemType = product.item === 'each' ? 'ITEM' : 'WEIGHT';
+                const unitLabel = product.item === 'each' ? 'pcs' : 'kg';
+                const taxBadge = product.tax ? `<div class="product-type-badge" style="background: var(--warning);">TAX: ${product.tax}%</div>` : '';
+                
+                return `
+                    <div class="product-card ${stockClass}" onclick="openQuantityModal('${product.code}')" ${product.totalStock <= 0 ? 'style="cursor: not-allowed;"' : ''}>
+                        ${taxBadge}
+                        ${product.item === 'each' ? '<div class="product-type-badge">ITEM</div>' : ''}
+                        <div class="product-card-name">${product.name}</div>
+                        <div class="product-card-details">
+                            Code: ${product.code}<br>
+                            Stock: ${product.totalStock.toFixed(3)} ${unitLabel}
+                        </div>
+                        <div class="product-card-price">$${product.price.toFixed(2)}/${product.item === 'each' ? 'each' : 'kg'}</div>
+                        ${stockStatus !== 'Good' ? 
+                            `<div class="product-card-stock ${stockColor}">${stockStatus}</div>` : 
+                            ''
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Display products for price tag generator
+        function displayProductsForPriceTags() {
+            const container = document.getElementById('products-grid-small');
+            
+            if (aggregatedProducts.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-box-open" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No products available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = aggregatedProducts.map(product => {
+                const unitLabel = product.item === 'each' ? 'pcs' : 'kg';
+                const taxBadge = product.tax ? `<div style="font-size: 0.6rem; color: var(--warning); font-weight: bold;">TAX: ${product.tax}%</div>` : '';
+                
+                return `
+                    <div class="product-card-small" onclick="selectProductForPriceTag('${product.code}')">
+                        <div class="product-name-small">${product.name}</div>
+                        <div class="product-price-small">$${product.price.toFixed(2)}</div>
+                        <div class="product-code-small">${product.code}</div>
+                        ${taxBadge}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Product search for POS
+            document.getElementById('productSearch').addEventListener('input', function() {
+                displayProducts();
+            });
+
+            // Price tag search with suggestions
+            const priceTagSearch = document.getElementById('priceTagSearch');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            
+            priceTagSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                if (searchTerm.length === 0) {
+                    searchSuggestions.classList.remove('active');
+                    priceTagSearchSuggestions = [];
+                    return;
+                }
+                
+                priceTagSearchSuggestions = aggregatedProducts.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm) || 
+                    product.code.toLowerCase().includes(searchTerm)
+                );
+                
+                if (priceTagSearchSuggestions.length > 0) {
+                    searchSuggestions.innerHTML = priceTagSearchSuggestions.slice(0, 8).map(product => `
+                        <div class="suggestion-item" onclick="selectProductFromSearch('${product.code}')">
+                            <div class="suggestion-name">${product.name}</div>
+                            <div class="suggestion-price">$${product.price.toFixed(2)}</div>
+                        </div>
+                    `).join('');
+                    searchSuggestions.classList.add('active');
+                } else {
+                    searchSuggestions.innerHTML = `
+                        <div class="suggestion-item" style="cursor: default; color: var(--gray);">
+                            No products found
+                        </div>
+                    `;
+                    searchSuggestions.classList.add('active');
+                }
+            });
+            
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!priceTagSearch.contains(event.target) && !searchSuggestions.contains(event.target)) {
+                    searchSuggestions.classList.remove('active');
+                }
+            });
+            
+            // Login form enter key
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                const quantityModal = document.getElementById('quantityModal');
+                const alertModal = document.getElementById('alertModal');
+                const priceTagModal = document.getElementById('priceTagModal');
+                const paymentModal = document.getElementById('paymentModal');
+                
+                if (event.target === quantityModal) {
+                    closeQuantityModal();
+                }
+                if (event.target === alertModal) {
+                    closeAlertModal();
+                }
+                if (event.target === priceTagModal) {
+                    closePriceTagModal();
+                }
+                if (event.target === paymentModal) {
+                    closePaymentModal();
+                }
+            });
+
+            // Close modals with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeQuantityModal();
+                    closeAlertModal();
+                    closePriceTagModal();
+                    closePaymentModal();
+                }
+            });
+
+            // Prevent page unload if there are pending sales
+            window.addEventListener('beforeunload', async function(e) {
+                if (pendingSales.length > 0 && !onlineStatus) {
+                    e.preventDefault();
+                    e.returnValue = 'You have pending sales that will be saved locally.';
+                }
+            });
+        }
+
+        // Toggle price tag generator section
+        function togglePriceTagSection() {
+            const priceTagContainer = document.getElementById('price-tag-container');
+            const posContainer = document.getElementById('pos-system');
+            
+            if (priceTagContainer.style.display === 'block') {
+                // Hide price tag section, show POS
+                priceTagContainer.style.display = 'none';
+                posContainer.style.display = 'block';
+            } else {
+                // Show price tag section, hide POS
+                priceTagContainer.style.display = 'block';
+                posContainer.style.display = 'none';
+                loadProductsForPriceTags();
+            }
+        }
+
+        // Load products for price tags section
+        function loadProductsForPriceTags() {
+            displayProductsForPriceTags();
+        }
+
+        // Select product from search suggestions
+        function selectProductFromSearch(productCode) {
+            const product = aggregatedProducts.find(p => p.code === productCode);
+            if (product) {
+                openPriceTagModal(product);
+                document.getElementById('priceTagSearch').value = '';
+                document.getElementById('searchSuggestions').classList.remove('active');
+            }
+        }
+
+        // Select product for price tag
+        function selectProductForPriceTag(productCode) {
+            const product = aggregatedProducts.find(p => p.code === productCode);
+            if (product) {
+                openPriceTagModal(product);
+            }
+        }
+
+        // Calculator functions for quantity modal
+        function appendToQuantity(value) {
+            const input = document.getElementById('productQuantity');
+            let currentValue = input.value;
+            
+            if (currentValue === '0' || currentValue === '0.00') {
+                if (value === '.') {
+                    input.value = '0.';
+                } else {
+                    input.value = value;
+                }
+            } else {
+                if (value === '.' && currentValue.includes('.')) {
+                    return; // Prevent multiple decimal points
+                }
+                input.value += value;
+            }
+            
+            // Format the value
+            formatQuantityInput();
+        }
+
+        function clearQuantity() {
+            document.getElementById('productQuantity').value = '0';
+        }
+
+        function backspaceQuantity() {
+            const input = document.getElementById('productQuantity');
+            let currentValue = input.value;
+            
+            if (currentValue.length > 1) {
+                input.value = currentValue.slice(0, -1);
+            } else {
+                input.value = '0';
+            }
+            
+            formatQuantityInput();
+        }
+
+        function formatQuantityInput() {
+            const input = document.getElementById('productQuantity');
+            let value = input.value;
+            
+            // Ensure it's a valid number
+            if (value === '' || value === '.') {
+                value = '0';
+            }
+            
+            // Remove leading zeros
+            if (value.length > 1 && value[0] === '0' && value[1] !== '.') {
+                value = value.replace(/^0+/, '');
+                if (value === '') value = '0';
+            }
+            
+            input.value = value;
+        }
+
+        // Calculator functions for cash modal
+        function appendToCash(value) {
+            const input = document.getElementById('cashInput');
+            let currentValue = input.value;
+            
+            if (currentValue === '0' || currentValue === '0.00') {
+                if (value === '.') {
+                    input.value = '0.';
+                } else {
+                    input.value = value;
+                }
+            } else {
+                if (value === '.' && currentValue.includes('.')) {
+                    return; // Prevent multiple decimal points
+                }
+                input.value += value;
+            }
+            
+            // Format the value and update change
+            formatCashInput();
+            updateCashPayment();
+        }
+
+        function clearCash() {
+            document.getElementById('cashInput').value = '0';
+            updateCashPayment();
+        }
+
+        function backspaceCash() {
+            const input = document.getElementById('cashInput');
+            let currentValue = input.value;
+            
+            if (currentValue.length > 1) {
+                input.value = currentValue.slice(0, -1);
+            } else {
+                input.value = '0';
+            }
+            
+            formatCashInput();
+            updateCashPayment();
+        }
+
+        function formatCashInput() {
+            const input = document.getElementById('cashInput');
+            let value = input.value;
+            
+            // Ensure it's a valid number
+            if (value === '' || value === '.') {
+                value = '0';
+            }
+            
+            // Remove leading zeros
+            if (value.length > 1 && value[0] === '0' && value[1] !== '.') {
+                value = value.replace(/^0+/, '');
+                if (value === '') value = '0';
+            }
+            
+            input.value = value;
+        }
+
+        // Update cash payment amounts
+        function updateCashPayment() {
+            const cashInput = document.getElementById('cashInput');
+            const total = cart.reduce((sum, item) => sum + item.total, 0);
+            
+            cashReceived = parseFloat(cashInput.value) || 0;
+            changeAmount = cashReceived - total;
+            
+            document.getElementById('paymentTotalAmount').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('cashReceivedAmount').textContent = `$${cashReceived.toFixed(2)}`;
+            document.getElementById('changeAmount').textContent = `$${changeAmount.toFixed(2)}`;
+            
+            // Highlight change if negative
+            const changeElement = document.getElementById('changeAmount');
+            if (changeAmount < 0) {
+                changeElement.style.color = 'var(--danger)';
+            } else {
+                changeElement.style.color = 'var(--success)';
+            }
+        }
+
+        // Process cash payment
+        function processCashPayment() {
+            const total = cart.reduce((sum, item) => sum + item.total, 0);
+            
+            if (cashReceived < total) {
+                showAlert('Error', `Cash received ($${cashReceived.toFixed(2)}) is less than total ($${total.toFixed(2)})`, 'error');
+                return;
+            }
+            
+            // If cash is sufficient, proceed to complete sale
+            completeSale();
+        }
+
+        // Update price tag preview
+        function updatePriceTagPreview() {
+            if (!selectedProductForTag) return;
+            
+            const previewContainer = document.getElementById('priceTagPreviewContent');
+            
+            // Clean professional portrait design
+            previewContainer.innerHTML = `
+                <div class="price-tag-preview-container">
+                    <!-- Header Section -->
+                    <div class="price-tag-header">
+                        <div class="company-name">
+                            ${companyData?.company_id || 'ENICAN STORE'}
+                        </div>
+                        ${companyData?.address ? `
+                            <div class="company-details">
+                                ${companyData.address}
+                            </div>
+                        ` : ''}
+                        ${companyData?.phone ? `
+                            <div class="company-details">
+                                Tel: ${companyData.phone}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- Product Name Section -->
+                    <div class="product-section">
+                        <div class="product-name-large">
+                            ${selectedProductForTag.name}
+                        </div>
+                        
+                        <div class="product-code-box">
+                            ${selectedProductForTag.code}
+                        </div>
+                    </div>
+                    
+                    <!-- Price Section -->
+                    <div class="price-section">
+                        <div class="price-label">
+                            SELLING PRICE
+                        </div>
+                        
+                        <div class="price-amount">
+                            $${selectedProductForTag.price.toFixed(2)}
+                        </div>
+                        
+                        <div class="unit-type">
+                            PER ${selectedProductForTag.item === 'each' ? 'PIECE' : 'KILOGRAM'}
+                        </div>
+                    </div>
+                    
+                    <!-- Barcode Area -->
+                    <div class="barcode-area">
+                        <div>${selectedProductForTag.code}</div>
+                    </div>
+                    
+                    <!-- Footer Section -->
+                    <div class="footer-section">
+                        <div class="quality-seal">
+                            ⭐ QUALITY GUARANTEED ⭐
+                        </div>
+                        <div class="spark-logo">
+                            Streetwise Meats
+                            69 Herbert Chitepo Street Mutare
+                            0776345985
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Open price tag modal
+        function openPriceTagModal(product) {
+            selectedProductForTag = product;
+            
+            // Update modal content
+            document.getElementById('priceTagProductName').textContent = product.name;
+            document.getElementById('priceTagProductCode').textContent = product.code;
+            document.getElementById('priceTagProductPrice').textContent = `$${product.price.toFixed(2)}`;
+            document.getElementById('priceTagProductType').textContent = product.item === 'each' ? 'Sold per piece' : 'Sold per kilogram';
+            
+            // Update preview
+            updatePriceTagPreview();
+            
+            // Show modal
+            document.getElementById('priceTagModal').classList.add('active');
+        }
+
+        // Close price tag modal
+        function closePriceTagModal() {
+            document.getElementById('priceTagModal').classList.remove('active');
+            selectedProductForTag = null;
+        }
+
+        // Print price tag
+        function printPriceTag() {
+            if (!selectedProductForTag) return;
+            
+            const printContainer = document.getElementById('priceTagPrintContainer');
+            
+            // Create portrait price tag for 80mm printer
+            const printHTML = `
+                <div class="price-tag-print" style="
+                    width: 80mm;
+                    min-height: 100mm;
+                    background: white;
+                    border: 2px solid black;
+                    font-family: 'Arial', 'Helvetica', sans-serif;
+                    position: relative;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                    padding: 3mm;
+                ">
+                    <!-- Header Section -->
+                    <div style="
+                        text-align: center;
+                        padding: 2mm 1mm;
+                        border-bottom: 3px double black;
+                        margin-bottom: 3mm;
+                    ">
+                        <div style="
+                            font-size: 18pt;
+                            font-weight: 900;
+                            letter-spacing: 0.5px;
+                            text-transform: uppercase;
+                            margin: 0 0 1mm 0;
+                            line-height: 1;
+                        ">
+                            ${companyData?.company_id || 'ENICAN STORE'}
+                        </div>
+                        ${companyData?.address ? `
+                            <div style="
+                                font-size: 7pt;
+                                margin: 0.5mm 0;
+                                font-weight: 600;
+                            ">
+                                ${companyData.address}
+                            </div>
+                        ` : ''}
+                        ${companyData?.phone ? `
+                            <div style="
+                                font-size: 7pt;
+                                margin: 0.5mm 0;
+                                font-weight: 600;
+                            ">
+                                Tel: ${companyData.phone}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- Product Name Section -->
+                    <div style="
+                        text-align: center;
+                        padding: 0 2mm;
+                        margin-bottom: 5mm;
+                    ">
+                        <div style="
+                            font-size: 20pt;
+                            font-weight: 800;
+                            text-transform: uppercase;
+                            margin: 0 0 3mm 0;
+                            line-height: 1.1;
+                            min-height: 25mm;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">
+                            ${selectedProductForTag.name}
+                        </div>
+                        
+                        <div style="
+                            font-size: 11pt;
+                            font-weight: 700;
+                            background: #f0f0f0;
+                            padding: 1mm 3mm;
+                            border-radius: 2mm;
+                            display: inline-block;
+                            margin-bottom: 3mm;
+                            border: 1px solid black;
+                        ">
+                            ${selectedProductForTag.code}
+                        </div>
+                    </div>
+                    
+                    <!-- Price Section -->
+                    <div style="
+                        text-align: center;
+                        margin: 5mm 0;
+                        padding: 3mm;
+                        border-top: 2px solid black;
+                        border-bottom: 2px solid black;
+                    ">
+                        <div style="
+                            font-size: 10pt;
+                            font-weight: 700;
+                            margin-bottom: 2mm;
+                            text-transform: uppercase;
+                        ">
+                            SELLING PRICE
+                        </div>
+                        
+                        <div style="
+                            font-size: 32pt;
+                            font-weight: 900;
+                            margin: 0;
+                            line-height: 1;
+                            letter-spacing: 1px;
+                        ">
+                            $${selectedProductForTag.price.toFixed(2)}
+                        </div>
+                        
+                        <div style="
+                            font-size: 12pt;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            margin-top: 2mm;
+                        ">
+                            PER ${selectedProductForTag.item === 'each' ? 'PIECE' : 'KILOGRAM'}
+                        </div>
+                    </div>
+                    
+                    <!-- Barcode Area -->
+                    <div style="
+                        margin: 3mm auto;
+                        text-align: center;
+                        min-height: 15mm;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 1px solid #ddd;
+                        background: white;
+                        padding: 2mm;
+                        font-size: 10pt;
+                        font-weight: 600;
+                    ">
+                        <div>${selectedProductForTag.code}</div>
+                    </div>
+                    
+                    <!-- Footer Section -->
+                    <div style="
+                        text-align: center;
+                        padding: 3mm 2mm;
+                        margin-top: 5mm;
+                        border-top: 1px dashed black;
+                    ">
+                        <div style="
+                            font-size: 9pt;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            margin-bottom: 2mm;
+                        ">
+                            ⭐ QUALITY GUARANTEED ⭐
+                        </div>
+                        
+                        <div style="
+                            font-size: 10pt;
+                            font-weight: 900;
+                            letter-spacing: 2px;
+                            margin-top: 3mm;
+                        ">
+                            Spark by Enican
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            printContainer.innerHTML = printHTML;
+            
+            // Open print window with portrait orientation
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Price Tag - ${selectedProductForTag.name}</title>
+                    <meta charset="UTF-8">
+                    <style>
+                        @media print {
+                            @page {
+                                margin: 0;
+                                padding: 0;
+                                size: 80mm auto;
+                            }
+                            
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                width: 80mm;
+                                background: white;
+                            }
+                            
+                            .price-tag-print {
+                                width: 80mm !important;
+                                min-height: 100mm !important;
+                                border: 2px solid black !important;
+                                page-break-inside: avoid;
+                                page-break-after: always;
+                            }
+                            
+                            .no-print {
+                                display: none !important;
+                            }
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); setTimeout(() => window.close(), 1000);">
+                    ${printHTML}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            
+            showAlert('Success', 'Price tag sent to printer', 'success');
+            closePriceTagModal();
+        }
+
+        // Load cart from IndexedDB
+        async function loadCart() {
+            try {
+                cart = await getAllData('cart') || [];
+                renderCart();
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                cart = [];
+                renderCart();
+            }
+        }
+
+        // Save cart to IndexedDB
+        async function saveCart() {
+            try {
+                const transaction = db.transaction(['cart'], 'readwrite');
+                const store = transaction.objectStore('cart');
+                
+                await store.clear();
+                
+                for (const item of cart) {
+                    await store.add(item);
+                }
+                
+                renderCart();
+            } catch (error) {
+                console.error('Error saving cart:', error);
+            }
+        }
+
+        // Load pending sales from IndexedDB (persistent across reloads)
+        async function loadPendingSales() {
+            try {
+                const allPending = await getDataByIndex('pendingSales', 'by_company', currentUser.company_id);
+                // Filter for unsynced sales and sort by timestamp (oldest first)
+                pendingSales = (allPending || [])
+                    .filter(sale => !sale.synced)
+                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                
+                console.log('Loaded pending sales from IndexedDB:', pendingSales.length);
+                
+                // Also check for very old pending sales (more than 7 days)
+                const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                const oldSales = pendingSales.filter(sale => new Date(sale.timestamp) < weekAgo);
+                
+                if (oldSales.length > 0 && onlineStatus) {
+                    console.log('Found old pending sales:', oldSales.length);
+                    // Try to sync these old sales first
+                    syncPendingSales();
+                }
+                
+                updateSyncStatus();
+            } catch (error) {
+                console.error('Error loading pending sales:', error);
+                pendingSales = [];
+            }
+        }
+
+        // Load pending fiscalization from IndexedDB
+        async function loadPendingFiscalization() {
+            try {
+                const allPending = await getDataByIndex('zimraQueue', 'by_status', false);
+                pendingFiscalization = (allPending || [])
+                    .filter(receipt => !receipt.fiscalized)
+                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                
+                console.log('Loaded pending fiscalization from IndexedDB:', pendingFiscalization.length);
+                updateZimraStatus();
+            } catch (error) {
+                console.error('Error loading pending fiscalization:', error);
+                pendingFiscalization = [];
+            }
+        }
+
+        // Update sync status display
+        function updateSyncStatus() {
+            const syncStatus = document.getElementById('syncStatus');
+            const syncIndicator = document.getElementById('syncIndicator');
+            const syncStatusText = document.getElementById('syncStatusText');
+            const pendingCount = document.getElementById('pendingCount');
+            const pendingReceipts = document.getElementById('pendingReceipts');
+            
+            if (pendingSales.length === 0) {
+                syncStatus.style.display = 'none';
+                return;
+            }
+            
+            syncStatus.style.display = 'block';
+            pendingCount.textContent = `${pendingSales.length} pending`;
+            
+            if (isSyncing) {
+                syncIndicator.className = 'sync-indicator syncing';
+                syncStatusText.textContent = 'Syncing to cloud...';
+            } else {
+                syncIndicator.className = 'sync-indicator';
+                syncStatusText.textContent = 'Pending sync';
+            }
+            
+            // Display only pending receipts (not synced)
+            const pendingOnly = pendingSales.filter(sale => !sale.synced);
+            pendingReceipts.innerHTML = pendingOnly.map(sale => `
+                <div class="pending-receipt">
+                    <div class="receipt-info">
+                        <span class="receipt-number">${sale.receipt_no}</span>
+                        <br>
+                        <small>${new Date(sale.timestamp).toLocaleDateString()} ${new Date(sale.timestamp).toLocaleTimeString()}</small>
+                    </div>
+                    <div class="receipt-status">
+                        ${sale.sync_attempts > 0 ? 'Retrying...' : 'Pending'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update ZIMRA status display
+        function updateZimraStatus() {
+            const zimraStatus = document.getElementById('zimraStatus');
+            const zimraIndicator = document.getElementById('zimraIndicator');
+            const zimraStatusText = document.getElementById('zimraStatusText');
+            const zimraPendingCount = document.getElementById('zimraPendingCount');
+            const pendingFiscalizationDiv = document.getElementById('pendingFiscalization');
+            
+            if (pendingFiscalization.length === 0) {
+                zimraStatus.style.display = 'none';
+                return;
+            }
+            
+            zimraStatus.style.display = 'block';
+            zimraPendingCount.textContent = `${pendingFiscalization.length} pending`;
+            
+            if (isFiscalizing) {
+                zimraIndicator.className = 'zimra-indicator pending';
+                zimraStatusText.textContent = 'Fiscalizing with ZIMRA...';
+            } else {
+                zimraIndicator.className = 'zimra-indicator';
+                zimraStatusText.textContent = 'Pending fiscalization';
+            }
+            
+            // Display only pending fiscalization
+            const pendingOnly = pendingFiscalization.filter(receipt => !receipt.fiscalized);
+            pendingFiscalizationDiv.innerHTML = pendingOnly.map(receipt => `
+                <div class="pending-fiscal">
+                    <div class="fiscal-info">
+                        <span class="fiscal-number">${receipt.receipt_no}</span>
+                        <br>
+                        <small>${new Date(receipt.timestamp).toLocaleDateString()} ${new Date(receipt.timestamp).toLocaleTimeString()}</small>
+                    </div>
+                    <div class="fiscal-status ${receipt.fiscalized ? 'fiscalized' : ''}">
+                        ${receipt.fiscal_attempts > 0 ? 'Retrying...' : 'Pending'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open payment modal
+        function openPaymentModal() {
+            if (cart.length === 0) {
+                showAlert('Error', 'Cart is empty', 'error');
+                return;
+            }
+            
+            // Reset cash input
+            cashReceived = 0;
+            changeAmount = 0;
+            document.getElementById('cashInput').value = '0';
+            
+            // Calculate total
+            const total = cart.reduce((sum, item) => sum + item.total, 0);
+            document.getElementById('paymentTotalAmount').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('cashReceivedAmount').textContent = '$0.00';
+            document.getElementById('changeAmount').textContent = '$0.00';
+            
+            // Reset payment method
+            selectedPaymentMethod = 'CASH';
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelector('.payment-method-btn').classList.add('selected');
+            
+            // Show cash input and buttons for CASH payment
+            document.getElementById('cashInput').style.display = 'block';
+            document.querySelector('.cash-buttons').style.display = 'grid';
+            document.getElementById('completeSaleBtn').style.display = 'none';
+            
+            // Show modal
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        // Close payment modal
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        // Select payment method
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Update UI
+            document.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Find and select the clicked button
+            const buttons = document.querySelectorAll('.payment-method-btn');
+            for (let i = 0; i < buttons.length; i++) {
+                if (buttons[i].textContent.includes(method)) {
+                    buttons[i].classList.add('selected');
+                    break;
+                }
+            }
+            
+            // If not CASH, hide cash input and show complete button
+            if (method !== 'CASH') {
+                document.getElementById('cashInput').style.display = 'none';
+                document.querySelector('.cash-buttons').style.display = 'none';
+                document.getElementById('completeSaleBtn').style.display = 'block';
+            } else {
+                document.getElementById('cashInput').style.display = 'block';
+                document.querySelector('.cash-buttons').style.display = 'grid';
+                document.getElementById('completeSaleBtn').style.display = 'none';
+            }
+        }
+
+        // Open quantity modal
+        function openQuantityModal(productCode) {
+            selectedProduct = aggregatedProducts.find(p => p.code === productCode);
+            
+            if (!selectedProduct) {
+                showAlert('Error', `Product "${productCode}" not found`, 'error');
+                return;
+            }
+            
+            if (selectedProduct.totalStock <= 0) {
+                showAlert('Out of Stock', `${selectedProduct.name} is out of stock`, 'error');
+                return;
+            }
+            
+            document.getElementById('productNameDisplay').textContent = selectedProduct.name;
+            
+            // Set product type display
+            const productTypeDisplay = document.getElementById('productTypeDisplay');
+            const quantityInstruction = document.getElementById('quantityInstruction');
+            
+            if (selectedProduct.item === 'each') {
+                // Item product - whole numbers only
+                productTypeDisplay.textContent = 'ITEM (sold per piece)';
+                quantityInstruction.textContent = 'Enter quantity in pieces';
+            } else {
+                // Weight product - decimals allowed
+                productTypeDisplay.textContent = 'WEIGHT (sold per kg)';
+                quantityInstruction.textContent = 'Enter quantity in kilograms';
+            }
+            
+            // Reset calculator input
+            document.getElementById('productQuantity').value = '0';
+            
+            document.getElementById('quantityModal').classList.add('active');
+        }
+
+        // Close quantity modal
+        function closeQuantityModal() {
+            document.getElementById('quantityModal').classList.remove('active');
+            selectedProduct = null;
+        }
+
+        // Confirm quantity and add to cart
+        function confirmQuantity() {
+            if (!selectedProduct) {
+                showAlert('Error', 'No product selected', 'error');
+                return;
+            }
+            
+            const quantityInput = document.getElementById('productQuantity');
+            let quantity = parseFloat(quantityInput.value) || 0;
+            
+            if (quantity <= 0) {
+                showAlert('Error', 'Please enter a valid quantity', 'error');
+                return;
+            }
+            
+            // For items, ensure integer quantity
+            if (selectedProduct.item === 'each') {
+                quantity = Math.floor(quantity);
+                if (quantity < 1) {
+                    showAlert('Error', 'Please enter a valid quantity (minimum 1)', 'error');
+                    return;
+                }
+            } else {
+                // For weight, round to 3 decimal places
+                quantity = parseFloat(quantity.toFixed(3));
+                if (quantity < 0.001) {
+                    showAlert('Error', 'Minimum quantity is 0.001 kg', 'error');
+                    return;
+                }
+            }
+            
+            if (quantity > selectedProduct.totalStock) {
+                const unit = selectedProduct.item === 'each' ? 'pieces' : 'kg';
+                showAlert('Insufficient Stock', `Only ${selectedProduct.totalStock.toFixed(3)} ${unit} available`, 'error');
+                return;
+            }
+            
+            addToCart(selectedProduct, quantity);
+            closeQuantityModal();
+        }
+
+        // Add to cart
+        function addToCart(product, quantity) {
+            const existingItemIndex = cart.findIndex(item => item.code === product.code);
+            
+            if (existingItemIndex !== -1) {
+                const existingItem = cart[existingItemIndex];
+                const newQuantity = existingItem.quantity + quantity;
+                
+                if (newQuantity > product.totalStock) {
+                    const unit = product.item === 'each' ? 'pieces' : 'kg';
+                    showAlert('Insufficient Stock', `Cannot add ${quantity} ${unit}. Total would exceed available stock of ${product.totalStock.toFixed(3)} ${unit}`, 'error');
+                    return;
+                }
+                
+                if (product.item === 'each') {
+                    cart[existingItemIndex].quantity = parseInt(newQuantity);
+                } else {
+                    cart[existingItemIndex].quantity = parseFloat(newQuantity.toFixed(3));
+                }
+                cart[existingItemIndex].total = cart[existingItemIndex].quantity * cart[existingItemIndex].price;
+            } else {
+                const cartItem = {
+                    id: product.code + '_' + Date.now(),
+                    name: product.name,
+                    code: product.code,
+                    price: product.price,
+                    cost: product.cost,
+                    quantity: product.item === 'each' ? parseInt(quantity) : parseFloat(quantity.toFixed(3)),
+                    total: parseFloat((quantity * product.price).toFixed(2)),
+                    item: product.item,
+                    tax: product.tax || ''
+                };
+                cart.push(cartItem);
+            }
+            
+            saveCart();
+            const unit = product.item === 'each' ? 'pieces' : 'kg';
+            // Removed the alert that was disturbing workers
+            // showAlert('Success', `Added ${quantity} ${unit} of ${product.name} to cart`, 'success');
+        }
+
+        // Render cart
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>Cart is empty</p>
+                    </div>
+                `;
+                cartTotal.textContent = 'Total: $0.00';
+                return;
+            }
+            
+            let total = 0;
+            cartItems.innerHTML = cart.map((item, index) => {
+                total += item.total;
+                const unit = item.item === 'each' ? 'pcs' : 'kg';
+                const quantityDisplay = item.item === 'each' ? item.quantity : item.quantity.toFixed(3);
+                const taxBadge = item.tax ? `<span style="font-size: 0.7rem; color: var(--warning); font-weight: bold;">TAX: ${item.tax}%</span>` : '';
+                
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name} ${taxBadge}</div>
+                            <div class="cart-item-quantity">
+                                ${quantityDisplay} ${unit} × $${item.price.toFixed(2)}/${item.item === 'each' ? 'each' : 'kg'}
+                            </div>
+                            <div class="cart-item-actions">
+                                <button class="quantity-btn" onclick="updateCartQuantity(${index}, ${item.item === 'each' ? -1 : -0.001})" ${item.quantity <= (item.item === 'each' ? 1 : 0.001) ? 'disabled' : ''}>-</button>
+                                <button class="quantity-btn" onclick="updateCartQuantity(${index}, ${item.item === 'each' ? 1 : 0.001})">+</button>
+                                <button class="remove-btn" onclick="removeFromCart(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cart-item-price">$${item.total.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        // Update cart quantity
+        function updateCartQuantity(index, change) {
+            if (index < 0 || index >= cart.length) return;
+            
+            const item = cart[index];
+            const product = aggregatedProducts.find(p => p.code === item.code);
+            
+            if (!product) {
+                showAlert('Error', 'Product not found in inventory', 'error');
+                return;
+            }
+            
+            let newQuantity;
+            if (item.item === 'each') {
+                newQuantity = item.quantity + change;
+            } else {
+                newQuantity = parseFloat((item.quantity + change).toFixed(3));
+            }
+            
+            if (newQuantity < (item.item === 'each' ? 1 : 0.001)) {
+                cart.splice(index, 1);
+            } else if (newQuantity > product.totalStock) {
+                const unit = item.item === 'each' ? 'pieces' : 'kg';
+                showAlert('Insufficient Stock', `Only ${product.totalStock.toFixed(3)} ${unit} available`, 'error');
+                return;
+            } else {
+                cart[index].quantity = newQuantity;
+                cart[index].total = parseFloat((newQuantity * item.price).toFixed(2));
+            }
+            
+            saveCart();
+        }
+
+        // Remove from cart
+        function removeFromCart(index) {
+            if (index < 0 || index >= cart.length) return;
+            
+            cart.splice(index, 1);
+            saveCart();
+        }
+
+        // Clear cart
+        function clearCart() {
+            if (cart.length === 0) return;
+            
+            if (confirm('Are you sure you want to clear the cart?')) {
+                cart = [];
+                saveCart();
+                showAlert('Success', 'Cart cleared', 'success');
+            }
+        }
+
+        // Generate receipt number
+        function generateReceiptNumber() {
+            const now = new Date();
+            const cashierPrefix = currentUser.user ? currentUser.user.substring(0, 2).toUpperCase() : 'SY';
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = String(now.getFullYear()).substring(2);
+            const randomDigits = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+            
+            return cashierPrefix + day + month + year + randomDigits;
+        }
+
+        // Complete sale with ZIMRA fiscalization
+        async function completeSale() {
+            if (cart.length === 0) {
+                showAlert('Error', 'Cart is empty', 'error');
+                return;
+            }
+            
+            // Validate stock
+            for (const item of cart) {
+                const product = aggregatedProducts.find(p => p.code === item.code);
+                if (!product) {
+                    showAlert('Error', `${item.name} is no longer available in inventory`, 'error');
+                    return;
+                }
+                if (item.quantity > product.totalStock) {
+                    const unit = item.item === 'each' ? 'pieces' : 'kg';
+                    showAlert('Insufficient Stock', `Only ${product.totalStock.toFixed(3)} ${unit} of ${item.name} available`, 'error');
+                    return;
+                }
+            }
+            
+            // For CASH payment, validate cash received
+            if (selectedPaymentMethod === 'CASH') {
+                const total = cart.reduce((sum, item) => sum + item.total, 0);
+                if (cashReceived < total) {
+                    showAlert('Error', `Cash received ($${cashReceived.toFixed(2)}) is less than total ($${total.toFixed(2)})`, 'error');
+                    return;
+                }
+            }
+            
+            const receiptNo = generateReceiptNumber();
+            const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+            
+            // Create sale record with unique ID
+            const saleRecord = {
+                receipt_no: receiptNo,
+                timestamp: new Date().toISOString(),
+                items: JSON.parse(JSON.stringify(cart)),
+                total: subtotal,
+                cash_received: selectedPaymentMethod === 'CASH' ? cashReceived : subtotal,
+                change_given: selectedPaymentMethod === 'CASH' ? changeAmount : 0,
+                cashier: currentUser.user,
+                company_id: currentUser.company_id,
+                payment_method: selectedPaymentMethod,
+                currency: 'USD',
+                status: 'pending',
+                sync_attempts: 0,
+                last_sync_attempt: null,
+                synced: false,
+                fiscalized: false,
+                fiscal_attempts: 0,
+                last_fiscal_attempt: null,
+                id: `sale_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            };
+            
+            try {
+                // Save to IndexedDB immediately
+                await storeData('pendingSales', saleRecord);
+                
+                // Also save to ZIMRA queue
+                await storeData('zimraQueue', {
+                    receipt_no: receiptNo,
+                    timestamp: new Date().toISOString(),
+                    items: JSON.parse(JSON.stringify(cart)),
+                    total: subtotal,
+                    cash_received: selectedPaymentMethod === 'CASH' ? cashReceived : subtotal,
+                    change_given: selectedPaymentMethod === 'CASH' ? changeAmount : 0,
+                    cashier: currentUser.user,
+                    company_id: currentUser.company_id,
+                    payment_method: selectedPaymentMethod,
+                    currency: 'USD',
+                    fiscalized: false,
+                    fiscal_attempts: 0,
+                    last_fiscal_attempt: null
+                });
+                
+                // Also save to sync queue for redundancy
+                await storeData('syncQueue', {
+                    type: 'sale',
+                    data: saleRecord,
+                    status: 'pending',
+                    created: new Date().toISOString(),
+                    attempts: 0
+                });
+                
+                // Add to local pending sales array
+                pendingSales.push(saleRecord);
+                updateSyncStatus();
+                
+                // Add to pending fiscalization array
+                pendingFiscalization.push(saleRecord);
+                updateZimraStatus();
+                
+                // Update product stock in cache
+                await updateProductStockInCache(saleRecord.items);
+                
+                // Clear cart
+                cart = [];
+                await saveCart();
+                
+                // Print receipt
+                printReceipt(saleRecord);
+                
+                // Show success message
+                const message = onlineStatus ? 
+                    'Sale completed! Fiscalizing with ZIMRA...' : 
+                    'Sale saved locally! Will fiscalize when online.';
+                showAlert('Success', `${message}<br>Receipt: ${receiptNo}<br>Payment: ${selectedPaymentMethod}`, 'success');
+                
+                // Update local stock display
+                updateLocalStock(saleRecord.items);
+                
+                // Try to fiscalize immediately if online
+                if (onlineStatus) {
+                    fiscalizePendingReceipts();
+                }
+                
+                // Close payment modal
+                closePaymentModal();
+                
+            } catch (error) {
+                console.error('Error completing sale:', error);
+                showAlert('Error', `Failed to complete sale: ${error.message}`, 'error');
+            }
+        }
+
+        // Update product stock in cache
+        async function updateProductStockInCache(items) {
+            try {
+                for (const item of items) {
+                    const cachedProduct = await getData('products', item.code);
+                    if (cachedProduct) {
+                        cachedProduct.stock -= item.quantity;
+                        if (cachedProduct.stock < 0) cachedProduct.stock = 0;
+                        cachedProduct.timestamp = new Date().toISOString();
+                        await storeData('products', cachedProduct);
+                    }
+                }
+                console.log('Product stock updated in cache');
+            } catch (error) {
+                console.error('Error updating product stock in cache:', error);
+            }
+        }
+
+        // Update local stock display
+        function updateLocalStock(items) {
+            items.forEach(item => {
+                const product = aggregatedProducts.find(p => p.code === item.code);
+                if (product) {
+                    product.totalStock -= item.quantity;
+                    if (product.totalStock < 0) product.totalStock = 0;
+                    product.totalStock = parseFloat(product.totalStock.toFixed(3));
+                }
+            });
+            displayProducts();
+            displayProductsForPriceTags();
+        }
+
+
+
+        // Fiscalize receipt with ZIMRA API
+        async function fiscalizeReceipt(receipt) {
+            try {
+                // Skip if too many attempts
+                if (receipt.fiscal_attempts >= 5) {
+                    console.warn(`Skipping receipt ${receipt.receipt_no} - too many failed attempts`);
+                    return false;
+                }
+                
+                // Build ZIMRA API URL with parameters
+                let zimraUrl = `${ZIMRA_API_URL}?`;
+                
+                // Add payment type and currency
+                zimraUrl += `payType=${receipt.payment_method}&`;
+                zimraUrl += `currency=${receipt.currency}&`;
+                
+                // Add each product with its details
+                receipt.items.forEach((item, index) => {
+                    const prodNum = index + 1;
+                    const vat = item.tax ? item.tax : '0';
+                    
+                    zimraUrl += `prod${prodNum}=${encodeURIComponent(item.name)}&`;
+                    zimraUrl += `qnt${prodNum}=${item.quantity}&`;
+                    zimraUrl += `price${prodNum}=${item.price}&`;
+                    zimraUrl += `vat${prodNum}=${vat}%25&`;
+                });
+                
+                console.log('Sending to ZIMRA API:', zimraUrl);
+                
+                // Send to ZIMRA API
+                const response = await fetch(zimraUrl);
+                const result = await response.json();
+                
+                if (result.success === true) {
+                    // Successfully fiscalized
+                    receipt.fiscalized = true;
+                    receipt.last_fiscal_attempt = new Date().toISOString();
+                    
+                    // Update in IndexedDB
+                    await storeData('zimraQueue', receipt);
+                    
+                    // Update in pending sales
+                    const pendingSale = pendingSales.find(s => s.receipt_no === receipt.receipt_no);
+                    if (pendingSale) {
+                        pendingSale.fiscalized = true;
+                        await storeData('pendingSales', pendingSale);
+                    }
+                    
+                    // Remove from pending fiscalization array
+                    const index = pendingFiscalization.findIndex(r => r.receipt_no === receipt.receipt_no);
+                    if (index !== -1) {
+                        pendingFiscalization.splice(index, 1);
+                    }
+                    
+                    console.log(`Successfully fiscalized receipt ${receipt.receipt_no}`);
+                    return true;
+                } else {
+                    // Failed to fiscalize
+                    receipt.fiscal_attempts = (receipt.fiscal_attempts || 0) + 1;
+                    receipt.last_fiscal_attempt = new Date().toISOString();
+                    await storeData('zimraQueue', receipt);
+                    
+                    console.error(`Failed to fiscalize receipt ${receipt.receipt_no}:`, result.message);
+                    return false;
+                }
+                
+            } catch (error) {
+                console.error('Error fiscalizing receipt:', receipt.receipt_no, error);
+                
+                // Increment attempt count
+                receipt.fiscal_attempts = (receipt.fiscal_attempts || 0) + 1;
+                receipt.last_fiscal_attempt = new Date().toISOString();
+                await storeData('zimraQueue', receipt);
+                
+                return false;
+            }
+        }
+
+        // Fiscalize pending receipts
+        async function fiscalizePendingReceipts() {
+            if (isFiscalizing || pendingFiscalization.length === 0 || !onlineStatus) return;
+            
+            isFiscalizing = true;
+            updateZimraStatus();
+            
+            const receiptsToFiscalize = pendingFiscalization.filter(receipt => !receipt.fiscalized);
+            let fiscalizedCount = 0;
+            let failedCount = 0;
+            
+            for (const receipt of receiptsToFiscalize) {
+                const success = await fiscalizeReceipt(receipt);
+                
+                if (success) {
+                    fiscalizedCount++;
+                } else {
+                    failedCount++;
+                }
+            }
+            
+            // Update display
+            updateZimraStatus();
+            isFiscalizing = false;
+            
+            // Show success message if any receipts were fiscalized
+            if (fiscalizedCount > 0) {
+                console.log(`${fiscalizedCount} receipt(s) fiscalized with ZIMRA!`);
+            }
+            
+            if (failedCount > 0) {
+                console.warn(`${failedCount} receipts failed to fiscalize, will retry`);
+            }
+        }
+
+        // Sync pending sales to API every 3 seconds
+        async function syncPendingSales() {
+            if (isSyncing || pendingSales.length === 0 || !onlineStatus) return;
+            
+            isSyncing = true;
+            updateSyncStatus();
+            
+            const salesToSync = pendingSales.filter(sale => !sale.synced);
+            let syncedCount = 0;
+            let failedCount = 0;
+            
+            for (const sale of salesToSync) {
+                try {
+                    // Skip if too many attempts
+                    if (sale.sync_attempts >= 5) {
+                        console.warn(`Skipping sale ${sale.receipt_no} - too many failed attempts`);
+                        continue;
+                    }
+                    
+                    // Send each item as separate stock adjustment
+                    let allItemsSynced = true;
+                    
+                    for (const item of sale.items) {
+                        const params = new URLSearchParams();
+                        params.append('product', item.name);
+                        params.append('code', item.code);
+                        params.append('cost', item.cost);
+                        params.append('price', item.price);
+                        params.append('stock', -item.quantity);
+                        params.append('cashier', sale.cashier);
+                        params.append('company_id', sale.company_id);
+                        params.append('reason', `Sale - ${sale.receipt_no}`);
+                        params.append('receipt_no', sale.receipt_no);
+
+                        try {
+                            const response = await fetch(`${PRODUCTS_API_URL}?${params.toString()}`);
+                            const result = await response.json();
+                            
+                            if (result.status !== 'success') {
+                                allItemsSynced = false;
+                                console.error(`Failed to sync item ${item.name}:`, result.message);
+                                break;
+                            }
+                        } catch (itemError) {
+                            allItemsSynced = false;
+                            console.error(`Error syncing item ${item.name}:`, itemError);
+                            break;
+                        }
+                    }
+                    
+                    if (allItemsSynced) {
+                        // Mark sale as synced
+                        sale.synced = true;
+                        sale.status = 'synced';
+                        sale.last_sync_attempt = new Date().toISOString();
+                        
+                        // Update in IndexedDB
+                        await storeData('pendingSales', sale);
+                        
+                        // Move to synced receipts
+                        await storeData('syncedReceipts', sale);
+                        
+                        // Remove from pending sales array
+                        const index = pendingSales.findIndex(s => s.receipt_no === sale.receipt_no);
+                        if (index !== -1) {
+                            pendingSales.splice(index, 1);
+                        }
+                        
+                        // Remove from sync queue
+                        const queueItems = await getDataByIndex('syncQueue', 'by_status', 'pending');
+                        for (const queueItem of queueItems) {
+                            if (queueItem.data.receipt_no === sale.receipt_no) {
+                                await deleteData('syncQueue', queueItem.id);
+                            }
+                        }
+                        
+                        syncedCount++;
+                        
+                    } else {
+                        // Increment attempt count
+                        sale.sync_attempts = (sale.sync_attempts || 0) + 1;
+                        sale.last_sync_attempt = new Date().toISOString();
+                        await storeData('pendingSales', sale);
+                        failedCount++;
+                    }
+                    
+                } catch (error) {
+                    console.error('Error syncing sale:', sale.receipt_no, error);
+                    sale.sync_attempts = (sale.sync_attempts || 0) + 1;
+                    sale.last_sync_attempt = new Date().toISOString();
+                    await storeData('pendingSales', sale);
+                    failedCount++;
+                }
+            }
+            
+            // Update display
+            updateSyncStatus();
+            isSyncing = false;
+            
+            // Show success message if any sales were synced
+            if (syncedCount > 0) {
+                console.log(`${syncedCount} sale(s) synced to cloud!`);
+            }
+            
+            if (failedCount > 0) {
+                console.warn(`${failedCount} sales failed to sync, will retry`);
+            }
+        }
+
+        // Start sync interval
+        function startSyncInterval() {
+            // Clear any existing interval
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+            
+            // Sync immediately if online
+            if (onlineStatus) {
+                syncPendingSales();
+            }
+            
+            // Set up 3-second sync interval
+            syncInterval = setInterval(() => {
+                if (onlineStatus) {
+                    syncPendingSales();
+                    
+                    // Refresh products every 30 seconds when online
+                    if (Date.now() % 30000 < 3000) { // Every ~30 seconds
+                        loadProducts().catch(console.error);
+                    }
+                }
+            }, 3000);
+            
+            console.log('Sync interval started (3 seconds)');
+        }
+
+        // Start ZIMRA fiscalization interval
+        function startZimraInterval() {
+            // Clear any existing interval
+            if (zimraInterval) {
+                clearInterval(zimraInterval);
+            }
+            
+            // Fiscalize immediately if online
+            if (onlineStatus) {
+                fiscalizePendingReceipts();
+            }
+            
+            // Set up 3-second fiscalization interval
+            zimraInterval = setInterval(() => {
+                if (onlineStatus) {
+                    fiscalizePendingReceipts();
+                }
+            }, 3000);
+            
+            console.log('ZIMRA fiscalization interval started (3 seconds)');
+        }
+
+        // Show loading
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
+                    <div class="loading-spinner" style="margin: 0 auto 15px; width: 40px; height: 40px;"></div>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Show error
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--danger);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Show alert
+        function showAlert(title, message, type = 'success') {
+            const alertModal = document.getElementById('alertModal');
+            const alertTitle = document.getElementById('alertTitle');
+            const alertMessage = document.getElementById('alertMessage');
+            const alertIcon = document.getElementById('alertIcon');
+            
+            alertTitle.textContent = title;
+            alertMessage.innerHTML = message;
+            
+            alertIcon.className = `alert-icon ${type}`;
+            alertIcon.innerHTML = type === 'success' ? '<i class="fas fa-check-circle"></i>' :
+                                 type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' :
+                                 type === 'info' ? '<i class="fas fa-info-circle"></i>' :
+                                 '<i class="fas fa-exclamation-triangle"></i>';
+            
+            alertModal.classList.add('active');
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(closeAlertModal, 3000);
+            }
+        }
+
+        // Close alert modal
+        function closeAlertModal() {
+            document.getElementById('alertModal').classList.remove('active');
+        }
+
+        // Refresh products
+        async function refreshProducts() {
+            if (!onlineStatus) {
+                showAlert('Warning', 'Cannot refresh products while offline', 'warning');
+                return;
+            }
+            
+            await loadProducts();
+        }
+
+
+function printReceipt(saleData) {
+    const receiptContainer = document.getElementById('receiptPrintContainer');
+    const date = new Date(saleData.timestamp).toLocaleString();
+
+    // Helper function to pad strings for alignment
+    function padRight(str, length) {
+        str = str.toString();
+        return str.length < length ? str + ' '.repeat(length - str.length) : str.substring(0, length);
+    }
+
+    function padLeft(str, length) {
+        str = str.toString();
+        return str.length < length ? ' '.repeat(length - str.length) + str : str.substring(0, length);
+    }
+
+    // Build receipt text
+    let receiptText = '';
+
+    // Header
+    const companyName = companyData.company_id || 'STREETWISE MEATS';
+    receiptText += `${companyName}\n`;
+    if (companyData.address) receiptText += `${companyData.address}\n`;
+    if (companyData.phone) receiptText += `Tel: ${companyData.phone}\n`;
+    if (companyData.vat) receiptText += `VAT: ${companyData.vat}\n`;
+    if (companyData.tin) receiptText += `TIN: ${companyData.tin}\n`;
+    receiptText += '................................\n';
+
+    // Store info & receipt info
+    receiptText += `69 HERBERT CHITEPO STREET, MUTARE\n`;
+    receiptText += `0776345985\n`;
+    receiptText += `SALES RECEIPT\n`;
+    receiptText += `Date: ${date}\n`;
+    receiptText += `Receipt: ${saleData.receipt_no}\n`;
+    receiptText += `Cashier: ${saleData.cashier}\n`;
+    receiptText += `Payment: ${saleData.payment_method}\n`;
+    receiptText += '................................\n';
+
+    // Items header
+    receiptText += padRight('Item', 20) + padLeft('Qty', 6) + padLeft('Price', 8) + padLeft('Total', 8) + '\n';
+    receiptText += '................................\n';
+
+    // Items
+    saleData.items.forEach(item => {
+        const unit = item.item === 'each' ? 'pcs' : 'kg';
+        const qty = item.item === 'each' ? item.quantity : item.quantity.toFixed(3);
+        const name = item.name.length > 20 ? item.name.substring(0, 20) : item.name;
+
+        receiptText += padRight(name, 20) +
+                       padLeft(qty + unit, 6) +
+                       padLeft('$' + item.price.toFixed(2), 8) +
+                       padLeft('$' + item.total.toFixed(2), 8) + '\n';
+    });
+
+    receiptText += '................................\n';
+
+    // Totals
+    receiptText += padRight('SUB TOTAL:', 34) + padLeft('$' + saleData.total.toFixed(2), 8) + '\n';
+    if (saleData.payment_method === 'CASH') {
+        receiptText += padRight('CASH RECEIVED:', 34) + padLeft('$' + saleData.cash_received.toFixed(2), 8) + '\n';
+        receiptText += padRight('CHANGE GIVEN:', 34) + padLeft('$' + saleData.change_given.toFixed(2), 8) + '\n';
+    }
+
+    receiptText += '................................\n';
+
+    // Footer
+    receiptText += `Thank you for your business!\nPlease come again\n`;
+    receiptText += `SPARK BY ENICAN\n`;
+
+    // Insert into container (optional)
+    receiptContainer.textContent = receiptText;
+
+    // Print using lightweight DOM - font sizes adjusted for 58mm
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <pre style="font-family: 'Courier New', monospace; font-size:12px; width:58mm;">
+<span style="font-size:14px;">${companyName}</span>
+${receiptText}
+        </pre>
+    `);
+    printWindow.document.close();
+
+    // Print and auto-close
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    }, 300);
+}
+
+
+        // Make functions global
+        window.openQuantityModal = openQuantityModal;
+        window.closeQuantityModal = closeQuantityModal;
+        window.appendToQuantity = appendToQuantity;
+        window.clearQuantity = clearQuantity;
+        window.backspaceQuantity = backspaceQuantity;
+        window.confirmQuantity = confirmQuantity;
+        window.updateCartQuantity = updateCartQuantity;
+        window.removeFromCart = removeFromCart;
+        window.clearCart = clearCart;
+        window.openPaymentModal = openPaymentModal;
+        window.closePaymentModal = closePaymentModal;
+        window.selectPaymentMethod = selectPaymentMethod;
+        window.appendToCash = appendToCash;
+        window.clearCash = clearCash;
+        window.backspaceCash = backspaceCash;
+        window.processCashPayment = processCashPayment;
+        window.completeSale = completeSale;
+        window.closeAlertModal = closeAlertModal;
+        window.refreshProducts = refreshProducts;
+        window.login = login;
+        window.logout = logout;
+        window.togglePriceTagSection = togglePriceTagSection;
+        window.selectProductForPriceTag = selectProductForPriceTag;
+        window.selectProductFromSearch = selectProductFromSearch;
+        window.openPriceTagModal = openPriceTagModal;
+        window.closePriceTagModal = closePriceTagModal;
+        window.printPriceTag = printPriceTag;
+
+        // Initialize app on load
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
 
